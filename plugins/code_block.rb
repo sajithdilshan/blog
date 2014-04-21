@@ -79,7 +79,11 @@ module Jekyll
       source = "<figure class='code'>"
       source += @caption if @caption
       if @filetype
+<<<<<<< HEAD
         source += " #{highlight(code, @filetype)}</figure>"
+=======
+        source += "#{highlight(code, @filetype)}</figure>"
+>>>>>>> f6ed4125b56ee28775f0fe1c3ebac7d6ef33daf9
       else
         source += "#{tableize_code(code.lstrip.rstrip.gsub(/</,'&lt;'))}</figure>"
       end

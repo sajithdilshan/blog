@@ -78,7 +78,11 @@ module OctopressLiquidFilters
   # Replaces relative urls with full urls
   def expand_urls(input, url='')
     url ||= '/'
+<<<<<<< HEAD
     input.gsub /(\s+(href|src)\s*=\s*["|']{1})(\/[^\"'>]*)/ do
+=======
+    input.gsub /(\s+(href|src)\s*=\s*["|']{1})(\/[^\/>]{1}[^\"'>]*)/ do
+>>>>>>> f6ed4125b56ee28775f0fe1c3ebac7d6ef33daf9
       $1+url+$3
     end
   end

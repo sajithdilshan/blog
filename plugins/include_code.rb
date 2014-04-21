@@ -62,7 +62,11 @@ module Jekyll
         title = @title ? "#{@title} (#{file.basename})" : file.basename
         url = "/#{code_dir}/#{@file}"
         source = "<figure class='code'><figcaption><span>#{title}</span> <a href='#{url}'>download</a></figcaption>\n"
+<<<<<<< HEAD
         source += " #{highlight(code, @filetype)}</figure>"
+=======
+        source += "#{highlight(code, @filetype)}</figure>"
+>>>>>>> f6ed4125b56ee28775f0fe1c3ebac7d6ef33daf9
         safe_wrap(source)
       end
     end

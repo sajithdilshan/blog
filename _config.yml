@@ -2,11 +2,19 @@
 #      Main Configs       #
 # ----------------------- #
 
+<<<<<<< HEAD
 url: http://sajithdilshan.github.io/blog
 title: _here be dragons_
 subtitle: 
 author: Sajith Dilshan
 simple_search: http://google.com/search
+=======
+url: http://yoursite.com
+title: My Octopress Blog
+subtitle: A blogging framework for hackers.
+author: Your Name
+simple_search: https://www.google.com/search
+>>>>>>> f6ed4125b56ee28775f0fe1c3ebac7d6ef33daf9
 description:
 
 # Default date format is "ordinal" (resulting in "July 22nd 2007")
@@ -16,7 +24,11 @@ description:
 date_format: "ordinal"
 
 # RSS / Email (optional) subscription links (change if using something like Feedburner)
+<<<<<<< HEAD
 subscribe_rss: /blog/atom.xml
+=======
+subscribe_rss: /atom.xml
+>>>>>>> f6ed4125b56ee28775f0fe1c3ebac7d6ef33daf9
 subscribe_email:
 # RSS feeds can list your email address if you like
 email:
@@ -26,10 +38,17 @@ email:
 # ----------------------- #
 
 # If publishing to a subdirectory as in http://site.com/project set 'root: /project'
+<<<<<<< HEAD
 root: /blog
 permalink: /blog/:year/:month/:day/:title/
 source: source
 destination: public/blog
+=======
+root: /
+permalink: /blog/:year/:month/:day/:title/
+source: source
+destination: public
+>>>>>>> f6ed4125b56ee28775f0fe1c3ebac7d6ef33daf9
 plugins: plugins
 code_dir: downloads/code
 category_dir: blog/categories
@@ -41,7 +60,11 @@ rdiscount:
     - smart
 pygments: false # default python pygments have been replaced by pygments.rb
 
+<<<<<<< HEAD
 paginate: 10         # Posts per page on the blog index
+=======
+paginate: 10          # Posts per page on the blog index
+>>>>>>> f6ed4125b56ee28775f0fe1c3ebac7d6ef33daf9
 pagination_dir: blog  # Directory base for pagination URLs eg. /blog/page/2/
 recent_posts: 5       # Posts in the sidebar Recent Posts section
 excerpt_link: "Read on &rarr;"  # "Continue reading" link text at the bottom of excerpted articles
@@ -63,17 +86,30 @@ default_asides: [asides/recent_posts.html, asides/github.html, asides/delicious.
 # ----------------------- #
 
 # Github repositories
+<<<<<<< HEAD
 github_user: sajithdilshan
 github_repo_count: 5
+=======
+github_user:
+github_repo_count: 0
+>>>>>>> f6ed4125b56ee28775f0fe1c3ebac7d6ef33daf9
 github_show_profile_link: true
 github_skip_forks: true
 
 # Twitter
+<<<<<<< HEAD
 twitter_user: sajithdilshan
 twitter_tweet_button: true
 
 # Google +1
 google_plus_one: true
+=======
+twitter_user:
+twitter_tweet_button: true
+
+# Google +1
+google_plus_one: false
+>>>>>>> f6ed4125b56ee28775f0fe1c3ebac7d6ef33daf9
 google_plus_one_size: medium
 
 # Google Plus Profile
@@ -90,6 +126,7 @@ delicious_user:
 delicious_count: 3
 
 # Disqus Comments
+<<<<<<< HEAD
 disqus_short_name: sajithblog
 disqus_show_comment_count: true
 
@@ -98,3 +135,13 @@ google_analytics_tracking_id: UA-41953855-1
 
 # Facebook Like
 facebook_like: true
+=======
+disqus_short_name:
+disqus_show_comment_count: false
+
+# Google Analytics
+google_analytics_tracking_id:
+
+# Facebook Like
+facebook_like: false
+>>>>>>> f6ed4125b56ee28775f0fe1c3ebac7d6ef33daf9

@@ -14,6 +14,10 @@ group :development do
   gem 'rb-fsevent', '~> 0.9'
   gem 'stringex', '~> 1.4.0'
   gem 'liquid', '~> 2.3.0'
+<<<<<<< HEAD
+=======
+  gem 'directory_watcher', '1.4.1'
+>>>>>>> f6ed4125b56ee28775f0fe1c3ebac7d6ef33daf9
 end
 
 gem 'sinatra', '~> 1.4.2'

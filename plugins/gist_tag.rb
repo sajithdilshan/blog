@@ -23,11 +23,23 @@ module Jekyll
     def render(context)
       if parts = @text.match(/([a-zA-Z\d]*) (.*)/)
         gist, file = parts[1].strip, parts[2].strip
+<<<<<<< HEAD
         script_url = script_url_for gist, file
         code       = get_cached_gist(gist, file) || get_gist_from_web(gist, file)
         html_output_for script_url, code
       else
         ""
+=======
+      else
+        gist, file = @text.strip, ""
+      end
+      if gist.empty?
+        ""
+      else
+        script_url = script_url_for gist, file
+        code       = get_cached_gist(gist, file) || get_gist_from_web(gist, file)
+        html_output_for script_url, code
+>>>>>>> f6ed4125b56ee28775f0fe1c3ebac7d6ef33daf9
       end
     end
 
@@ -46,7 +58,11 @@ module Jekyll
     end
 
     def get_gist_url_for(gist, file)
+<<<<<<< HEAD
       "https://raw.github.com/gist/#{gist}/#{file}"
+=======
+      "https://gist.github.com/raw/#{gist}/#{file}"
+>>>>>>> f6ed4125b56ee28775f0fe1c3ebac7d6ef33daf9
     end
 
     def cache(gist, file, data)
@@ -71,8 +87,40 @@ module Jekyll
     end
 
     def get_gist_from_web(gist, file)
+<<<<<<< HEAD
       gist_url          = get_gist_url_for gist, file
       raw_uri           = URI.parse gist_url
+=======
+      gist_url = get_gist_url_for(gist, file)
+      data     = get_web_content(gist_url)
+
+      locations = Array.new
+      while (data.code.to_i == 301 || data.code.to_i == 302)
+        data = handle_gist_redirecting(data)
+        break if locations.include? data.header['Location']
+        locations << data.header['Location']
+      end
+
+      if data.code.to_i != 200
+        raise RuntimeError, "Gist replied with #{data.code} for #{gist_url}"
+      end
+
+      cache(gist, file, data.body) unless @cache_disabled
+      data.body
+    end
+
+    def handle_gist_redirecting(data)
+      redirected_url = data.header['Location']
+      if redirected_url.nil? || redirected_url.empty?
+        raise ArgumentError, "GitHub replied with a 302 but didn't provide a location in the response headers."
+      end
+
+      get_web_content(redirected_url)
+    end
+
+    def get_web_content(url)
+      raw_uri           = URI.parse url
+>>>>>>> f6ed4125b56ee28775f0fe1c3ebac7d6ef33daf9
       proxy             = ENV['http_proxy']
       if proxy
         proxy_uri       = URI.parse(proxy)
@@ -84,12 +132,15 @@ module Jekyll
       https.verify_mode = OpenSSL::SSL::VERIFY_NONE
       request           = Net::HTTP::Get.new raw_uri.request_uri
       data              = https.request request
+<<<<<<< HEAD
       if data.code.to_i != 200
         raise RuntimeError, "Gist replied with #{data.code} for #{gist_url}"
       end
       data              = data.body
       cache gist, file, data unless @cache_disabled
       data
+=======
+>>>>>>> f6ed4125b56ee28775f0fe1c3ebac7d6ef33daf9
     end
   end
 
