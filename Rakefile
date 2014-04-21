@@ -9,22 +9,14 @@ ssh_port       = "22"
 document_root  = "~/website.com/"
 rsync_delete   = false
 rsync_args     = ""  # Any extra arguments to pass to rsync
-<<<<<<< HEAD
-deploy_default = "push"
-=======
 deploy_default = "rsync"
->>>>>>> f6ed4125b56ee28775f0fe1c3ebac7d6ef33daf9
 
 # This will be configured for you when you run config_deploy
 deploy_branch  = "gh-pages"
 
 ## -- Misc Configs -- ##
 
-<<<<<<< HEAD
 public_dir      = "public/blog"    # compiled site directory
-=======
-public_dir      = "public"    # compiled site directory
->>>>>>> f6ed4125b56ee28775f0fe1c3ebac7d6ef33daf9
 source_dir      = "source"    # source file directory
 blog_index_dir  = 'source'    # directory for your blog's index page (if you put your index in source/blog/index.html, set this to 'source/blog')
 deploy_dir      = "_deploy"   # deploy directory (for Github pages deployment)
@@ -35,13 +27,10 @@ new_post_ext    = "markdown"  # default new post file extension when using the n
 new_page_ext    = "markdown"  # default new page file extension when using the new_page task
 server_port     = "4000"      # port for preview server eg. localhost:4000
 
-<<<<<<< HEAD
-=======
 if (/cygwin|mswin|mingw|bccwin|wince|emx/ =~ RUBY_PLATFORM) != nil
   puts '## Set the codepage to 65001 for Windows machines'
   `chcp 65001`
 end
->>>>>>> f6ed4125b56ee28775f0fe1c3ebac7d6ef33daf9
 
 desc "Initial setup for Octopress: copies the default theme into the path of Jekyll's generator. Rake install defaults to rake install[classic] to install a different theme run rake install[some_theme_name]"
 task :install, :theme do |t, args|
@@ -123,11 +112,7 @@ task :new_post, :title do |t, args|
     post.puts "---"
     post.puts "layout: post"
     post.puts "title: \"#{title.gsub(/&/,'&amp;')}\""
-<<<<<<< HEAD
-    post.puts "date: #{Time.now.strftime('%Y-%m-%d %H:%M')}"
-=======
     post.puts "date: #{Time.now.strftime('%Y-%m-%d %H:%M:%S %z')}"
->>>>>>> f6ed4125b56ee28775f0fe1c3ebac7d6ef33daf9
     post.puts "comments: true"
     post.puts "categories: "
     post.puts "---"
@@ -202,13 +187,8 @@ task :update_style, :theme do |t, args|
   end
   mv "sass", "sass.old"
   puts "## Moved styles into sass.old/"
-<<<<<<< HEAD
-  cp_r "#{themes_dir}/"+theme+"/sass/", "sass"
-  cp_r "sass.old/custom/.", "sass/custom"
-=======
   cp_r "#{themes_dir}/"+theme+"/sass/", "sass", :remove_destination=>true
   cp_r "sass.old/custom/.", "sass/custom/", :remove_destination=>true
->>>>>>> f6ed4125b56ee28775f0fe1c3ebac7d6ef33daf9
   puts "## Updated Sass ##"
 end
 
@@ -281,11 +261,7 @@ multitask :push do
   cp_r "#{public_dir}/.", deploy_dir
   cd "#{deploy_dir}" do
     system "git add -A"
-<<<<<<< HEAD
-    puts "\n## Commiting: Site updated at #{Time.now.utc}"
-=======
     puts "\n## Committing: Site updated at #{Time.now.utc}"
->>>>>>> f6ed4125b56ee28775f0fe1c3ebac7d6ef33daf9
     message = "Site updated at #{Time.now.utc}"
     system "git commit -m \"#{message}\""
     puts "\n## Pushing generated #{deploy_dir} website"
@@ -335,11 +311,7 @@ task :setup_github_pages, :repo do |t, args|
     repo_url = args.repo
   else
     puts "Enter the read/write url for your repository"
-<<<<<<< HEAD
-    puts "(For example, 'git@github.com:your_username/your_username.github.io)"
-=======
     puts "(For example, 'git@github.com:your_username/your_username.github.io.git)"
->>>>>>> f6ed4125b56ee28775f0fe1c3ebac7d6ef33daf9
     puts "           or 'https://github.com/your_username/your_username.github.io')"
     repo_url = get_stdin("Repository url: ")
   end
@@ -369,15 +341,9 @@ task :setup_github_pages, :repo do |t, args|
       end
     end
   end
-<<<<<<< HEAD
-  url = "http://#{user}.github.io"
-  url += "/#{project}" unless project == ''
-  jekyll_config = IO.read('_config.yml')
-  jekyll_config.sub!(/^url:.*$/, "url: #{url}")
-=======
+
   jekyll_config = IO.read('_config.yml')
   jekyll_config.sub!(/^url:.*$/, "url: #{blog_url(user, project)}")
->>>>>>> f6ed4125b56ee28775f0fe1c3ebac7d6ef33daf9
   File.open('_config.yml', 'w') do |f|
     f.write jekyll_config
   end
@@ -397,11 +363,8 @@ task :setup_github_pages, :repo do |t, args|
       f.write rakefile
     end
   end
-<<<<<<< HEAD
-  puts "\n---\n## Now you can deploy to #{url} with `rake deploy` ##"
-=======
+
   puts "\n---\n## Now you can deploy to #{repo_url} with `rake deploy` ##"
->>>>>>> f6ed4125b56ee28775f0fe1c3ebac7d6ef33daf9
 end
 
 def ok_failed(condition)
@@ -426,8 +389,7 @@ def ask(message, valid_options)
   answer
 end
 
-<<<<<<< HEAD
-=======
+
 def blog_url(user, project)
   url = if File.exists?('source/CNAME')
     "http://#{IO.read('source/CNAME').strip}"
@@ -438,7 +400,6 @@ def blog_url(user, project)
   url
 end
 
->>>>>>> f6ed4125b56ee28775f0fe1c3ebac7d6ef33daf9
 desc "list tasks"
 task :list do
   puts "Tasks: #{(Rake::Task.tasks - [Rake::Task[:list]]).join(', ')}"

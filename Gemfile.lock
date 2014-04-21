@@ -53,10 +53,7 @@ PLATFORMS
 DEPENDENCIES
   RedCloth (~> 4.2.9)
   compass (~> 0.12.2)
-<<<<<<< HEAD
-=======
   directory_watcher (= 1.4.1)
->>>>>>> f6ed4125b56ee28775f0fe1c3ebac7d6ef33daf9
   haml (~> 3.1.7)
   jekyll (~> 0.12)
   liquid (~> 2.3.0)
