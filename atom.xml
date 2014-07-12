@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[_here be dragons_]]></title>
-  <link href="http://sajithdilshan.github.io/blog/atom.xml" rel="self"/>
-  <link href="http://sajithdilshan.github.io/blog/"/>
-  <updated>2014-07-12T14:20:05+05:30</updated>
-  <id>http://sajithdilshan.github.io/blog/</id>
+  <link href="http://sajithdilshan.github.io//github/atom.xml" rel="self"/>
+  <link href="http://sajithdilshan.github.io//github/"/>
+  <updated>2014-07-12T14:22:45+05:30</updated>
+  <id>http://sajithdilshan.github.io//github/</id>
   <author>
     <name><![CDATA[Sajith Dilshan]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[The Woes of WebSockets]]></title>
-    <link href="http://sajithdilshan.github.io/blog/blog/2014/03/26/the-woes-of-websockets/"/>
+    <link href="http://sajithdilshan.github.io//github/blog/2014/03/26/the-woes-of-websockets/"/>
     <updated>2014-03-26T12:49:00+05:30</updated>
-    <id>http://sajithdilshan.github.io/blog/blog/2014/03/26/the-woes-of-websockets</id>
+    <id>http://sajithdilshan.github.io//github/blog/2014/03/26/the-woes-of-websockets</id>
     <content type="html"><![CDATA[<p>Lately I&rsquo;ve been developing a server side implementation of <a href="https://tools.ietf.org/html/rfc6455">Web Socket Protocol</a> and I must say even though the core concept of Web Socket protocol is awesome, its framing specification has got it all wrong. Let&rsquo;s start with the definition of a Web Socket frame.</p>
 
 <pre><code> 0                   1                   2                   3
@@ -70,9 +70,9 @@
   
   <entry>
     <title type="html"><![CDATA[IntelliJ IDEA Plugin for UltraESB]]></title>
-    <link href="http://sajithdilshan.github.io/blog/blog/2014/02/14/intellij-idea-plugin-for-ultraesb/"/>
+    <link href="http://sajithdilshan.github.io//github/blog/2014/02/14/intellij-idea-plugin-for-ultraesb/"/>
     <updated>2014-02-14T19:04:00+05:30</updated>
-    <id>http://sajithdilshan.github.io/blog/blog/2014/02/14/intellij-idea-plugin-for-ultraesb</id>
+    <id>http://sajithdilshan.github.io//github/blog/2014/02/14/intellij-idea-plugin-for-ultraesb</id>
     <content type="html"><![CDATA[<p>Recently I&rsquo;ve developed an IntelliJ IDEA plugin for <a href="http://www.adroitlogic.org/products/ultraesb.html">UltraESB</a> with few features and while doing that I&rsquo;ve learned so much about the plugin development for IDEA. And also if you&rsquo;re an ultraesb developer, by installing this plugin you&rsquo;ll be able to enjoy below mentioned features.</p>
 
 <h3>Creating multi module projects and deployment units</h3>
@@ -97,9 +97,9 @@
   
   <entry>
     <title type="html"><![CDATA[Mate Panel With Luna]]></title>
-    <link href="http://sajithdilshan.github.io/blog/blog/2013/09/29/mate-panel-with-luna/"/>
+    <link href="http://sajithdilshan.github.io//github/blog/2013/09/29/mate-panel-with-luna/"/>
     <updated>2013-09-29T04:47:00+05:30</updated>
-    <id>http://sajithdilshan.github.io/blog/blog/2013/09/29/mate-panel-with-luna</id>
+    <id>http://sajithdilshan.github.io//github/blog/2013/09/29/mate-panel-with-luna</id>
     <content type="html"><![CDATA[<p>So this tutorial is about how to install mate-panel in Elementary OS Luna. Let&rsquo;s just get started right away.</p>
 
 <p>First we need to add the mate repository to our system. Keep in mind this is only for precise (Ubuntu 12.04) systems. Open a terminal and run below command.</p>
@@ -133,9 +133,9 @@
   
   <entry>
     <title type="html"><![CDATA[AJAX With Ruby on Rails]]></title>
-    <link href="http://sajithdilshan.github.io/blog/blog/2013/08/21/ajax-with-ruby-on-rails/"/>
+    <link href="http://sajithdilshan.github.io//github/blog/2013/08/21/ajax-with-ruby-on-rails/"/>
     <updated>2013-08-21T17:28:00+05:30</updated>
-    <id>http://sajithdilshan.github.io/blog/blog/2013/08/21/ajax-with-ruby-on-rails</id>
+    <id>http://sajithdilshan.github.io//github/blog/2013/08/21/ajax-with-ruby-on-rails</id>
     <content type="html"><![CDATA[<p>As for the Software Engineering Project module in this semester I&rsquo;m building a feed reader(similar to Google reader) using ruby on rails. And for this project I&rsquo;ve been using AJAX heavily and Below is a simple tutorial to use AJAX with RoR.</p>
 
 <p>So here&rsquo;s the scenario. A list of feed subscriptions is displayed and when a user clicks on a item in that list, AJAX request is sent to the server to fetch the feed items(posts) of that feed and it is displayed inside the DIV tag with the id &ldquo;feedlistcontainer&rdquo;. Let&rsquo;s assume the corresponding modelname is userfeed.rb and the controller is userfeeds_controller.rb</p>
@@ -264,9 +264,9 @@
   
   <entry>
     <title type="html"><![CDATA[Facing an Interview]]></title>
-    <link href="http://sajithdilshan.github.io/blog/blog/2013/08/11/facing-an-interview/"/>
+    <link href="http://sajithdilshan.github.io//github/blog/2013/08/11/facing-an-interview/"/>
     <updated>2013-08-11T15:30:00+05:30</updated>
-    <id>http://sajithdilshan.github.io/blog/blog/2013/08/11/facing-an-interview</id>
+    <id>http://sajithdilshan.github.io//github/blog/2013/08/11/facing-an-interview</id>
     <content type="html"><![CDATA[<p>Last week I got the chance to face an interview for the position of a Softwre Engineer, (Intern)  and I thought I would share the details. Hope this would be helpful for anyone who is looking for some tips before going to an interview.</p>
 
 <p>So let&rsquo;s start with the CV. When you&rsquo;re preparing the CV don&rsquo;t include each and every achievement, experience and project you did. CV is mainly a marketing document. Do some research on the company you&rsquo;re applying, and customize your CV so that it only includes relevant data about yourself, which might come in handy if you get to work in that particular company. (E.g. If a company is heavily using a particular framework, emphasis your experience and the projects you did using that framework.)</p>
@@ -285,9 +285,9 @@
   
   <entry>
     <title type="html"><![CDATA[Path Finding With BFS]]></title>
-    <link href="http://sajithdilshan.github.io/blog/blog/2013/08/04/path-finding-with-bfs/"/>
+    <link href="http://sajithdilshan.github.io//github/blog/2013/08/04/path-finding-with-bfs/"/>
     <updated>2013-08-04T19:21:00+05:30</updated>
-    <id>http://sajithdilshan.github.io/blog/blog/2013/08/04/path-finding-with-bfs</id>
+    <id>http://sajithdilshan.github.io//github/blog/2013/08/04/path-finding-with-bfs</id>
     <content type="html"><![CDATA[<p>So as a part of the programming challenge module I did last semester, we were supposed to build a game which is similar to the Nintendo Tank war game. This was a group project and <a href="https://twitter.com/TharinduRusira">Tharindu</a> and I designed and build the game. What we had to do was to build a client who can communicate with a server. All together five clients can connect with the server simultaneously and the server sends global updates about the position of each clients, positions of coin piles, etc on each second. the clients has to process this global update and send its next move to the server before the next global update is arrived from the server. More details about the server specification is available <a href="https://docs.google.com/file/d/0B0SvcTAspdLrNHdJalc5elpiM28/edit">here</a>.</p>
 
 <p>So the main objective of the game is to collect as many coin piles as possible. The game is played on a 2D cell matrix as you can see on the below image. So what we had to do first was to create a suitable data structure which can be used by the path finding algorithm efficiently.</p>
@@ -660,9 +660,9 @@
   
   <entry>
     <title type="html"><![CDATA[Sexy, Slim Wingpanel]]></title>
-    <link href="http://sajithdilshan.github.io/blog/blog/2013/06/23/sexy/"/>
+    <link href="http://sajithdilshan.github.io//github/blog/2013/06/23/sexy/"/>
     <updated>2013-06-23T16:33:00+05:30</updated>
-    <id>http://sajithdilshan.github.io/blog/blog/2013/06/23/sexy</id>
+    <id>http://sajithdilshan.github.io//github/blog/2013/06/23/sexy</id>
     <content type="html"><![CDATA[<p>If you are already using Elementary OS Luna then you don&rsquo;t need any introduction about wingpanel. But if you are not using eOS, then it is a top panel, similar to one you had in gnome 2 which displayed indicators and date/time.</p>
 
 <p>But in this new slim wingplanel version, developed by <a href="https://plus.google.com/107828869706749088966">Heath Paddock</a> the panel&rsquo;s width is reduced only to display the indicator icons and hovers over windows, hence maximizing the available vertical pixels for content as you can see in the below image.</p>

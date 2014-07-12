@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: Elementary | _here be dragons_]]></title>
-  <link href="http://sajithdilshan.github.io/blog/blog/categories/elementary/atom.xml" rel="self"/>
-  <link href="http://sajithdilshan.github.io/blog/"/>
-  <updated>2014-07-12T14:20:05+05:30</updated>
-  <id>http://sajithdilshan.github.io/blog/</id>
+  <link href="http://sajithdilshan.github.io//github/blog/categories/elementary/atom.xml" rel="self"/>
+  <link href="http://sajithdilshan.github.io//github/"/>
+  <updated>2014-07-12T14:22:45+05:30</updated>
+  <id>http://sajithdilshan.github.io//github/</id>
   <author>
     <name><![CDATA[Sajith Dilshan]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Sexy, Slim Wingpanel]]></title>
-    <link href="http://sajithdilshan.github.io/blog/blog/2013/06/23/sexy/"/>
+    <link href="http://sajithdilshan.github.io//github/blog/2013/06/23/sexy/"/>
     <updated>2013-06-23T16:33:00+05:30</updated>
-    <id>http://sajithdilshan.github.io/blog/blog/2013/06/23/sexy</id>
+    <id>http://sajithdilshan.github.io//github/blog/2013/06/23/sexy</id>
     <content type="html"><![CDATA[<p>If you are already using Elementary OS Luna then you don&rsquo;t need any introduction about wingpanel. But if you are not using eOS, then it is a top panel, similar to one you had in gnome 2 which displayed indicators and date/time.</p>
 
 <p>But in this new slim wingplanel version, developed by <a href="https://plus.google.com/107828869706749088966">Heath Paddock</a> the panel&rsquo;s width is reduced only to display the indicator icons and hovers over windows, hence maximizing the available vertical pixels for content as you can see in the below image.</p>

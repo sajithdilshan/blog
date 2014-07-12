@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: Internship | _here be dragons_]]></title>
-  <link href="http://sajithdilshan.github.io/blog/blog/categories/internship/atom.xml" rel="self"/>
-  <link href="http://sajithdilshan.github.io/blog/"/>
-  <updated>2014-07-12T14:20:05+05:30</updated>
-  <id>http://sajithdilshan.github.io/blog/</id>
+  <link href="http://sajithdilshan.github.io//github/blog/categories/internship/atom.xml" rel="self"/>
+  <link href="http://sajithdilshan.github.io//github/"/>
+  <updated>2014-07-12T14:22:45+05:30</updated>
+  <id>http://sajithdilshan.github.io//github/</id>
   <author>
     <name><![CDATA[Sajith Dilshan]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Facing an Interview]]></title>
-    <link href="http://sajithdilshan.github.io/blog/blog/2013/08/11/facing-an-interview/"/>
+    <link href="http://sajithdilshan.github.io//github/blog/2013/08/11/facing-an-interview/"/>
     <updated>2013-08-11T15:30:00+05:30</updated>
-    <id>http://sajithdilshan.github.io/blog/blog/2013/08/11/facing-an-interview</id>
+    <id>http://sajithdilshan.github.io//github/blog/2013/08/11/facing-an-interview</id>
     <content type="html"><![CDATA[<p>Last week I got the chance to face an interview for the position of a Softwre Engineer, (Intern)  and I thought I would share the details. Hope this would be helpful for anyone who is looking for some tips before going to an interview.</p>
 
 <p>So let&rsquo;s start with the CV. When you&rsquo;re preparing the CV don&rsquo;t include each and every achievement, experience and project you did. CV is mainly a marketing document. Do some research on the company you&rsquo;re applying, and customize your CV so that it only includes relevant data about yourself, which might come in handy if you get to work in that particular company. (E.g. If a company is heavily using a particular framework, emphasis your experience and the projects you did using that framework.)</p>

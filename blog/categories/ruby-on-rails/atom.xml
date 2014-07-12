@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: Ruby on Rails | _here be dragons_]]></title>
-  <link href="http://sajithdilshan.github.io/blog/blog/categories/ruby-on-rails/atom.xml" rel="self"/>
-  <link href="http://sajithdilshan.github.io/blog/"/>
-  <updated>2014-07-12T14:20:05+05:30</updated>
-  <id>http://sajithdilshan.github.io/blog/</id>
+  <link href="http://sajithdilshan.github.io//github/blog/categories/ruby-on-rails/atom.xml" rel="self"/>
+  <link href="http://sajithdilshan.github.io//github/"/>
+  <updated>2014-07-12T14:22:45+05:30</updated>
+  <id>http://sajithdilshan.github.io//github/</id>
   <author>
     <name><![CDATA[Sajith Dilshan]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[AJAX With Ruby on Rails]]></title>
-    <link href="http://sajithdilshan.github.io/blog/blog/2013/08/21/ajax-with-ruby-on-rails/"/>
+    <link href="http://sajithdilshan.github.io//github/blog/2013/08/21/ajax-with-ruby-on-rails/"/>
     <updated>2013-08-21T17:28:00+05:30</updated>
-    <id>http://sajithdilshan.github.io/blog/blog/2013/08/21/ajax-with-ruby-on-rails</id>
+    <id>http://sajithdilshan.github.io//github/blog/2013/08/21/ajax-with-ruby-on-rails</id>
     <content type="html"><![CDATA[<p>As for the Software Engineering Project module in this semester I&rsquo;m building a feed reader(similar to Google reader) using ruby on rails. And for this project I&rsquo;ve been using AJAX heavily and Below is a simple tutorial to use AJAX with RoR.</p>
 
 <p>So here&rsquo;s the scenario. A list of feed subscriptions is displayed and when a user clicks on a item in that list, AJAX request is sent to the server to fetch the feed items(posts) of that feed and it is displayed inside the DIV tag with the id &ldquo;feedlistcontainer&rdquo;. Let&rsquo;s assume the corresponding modelname is userfeed.rb and the controller is userfeeds_controller.rb</p>

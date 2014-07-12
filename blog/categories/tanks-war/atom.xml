@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: Tanks War | _here be dragons_]]></title>
-  <link href="http://sajithdilshan.github.io/blog/blog/categories/tanks-war/atom.xml" rel="self"/>
-  <link href="http://sajithdilshan.github.io/blog/"/>
-  <updated>2014-07-12T14:20:05+05:30</updated>
-  <id>http://sajithdilshan.github.io/blog/</id>
+  <link href="http://sajithdilshan.github.io//github/blog/categories/tanks-war/atom.xml" rel="self"/>
+  <link href="http://sajithdilshan.github.io//github/"/>
+  <updated>2014-07-12T14:22:45+05:30</updated>
+  <id>http://sajithdilshan.github.io//github/</id>
   <author>
     <name><![CDATA[Sajith Dilshan]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Path Finding With BFS]]></title>
-    <link href="http://sajithdilshan.github.io/blog/blog/2013/08/04/path-finding-with-bfs/"/>
+    <link href="http://sajithdilshan.github.io//github/blog/2013/08/04/path-finding-with-bfs/"/>
     <updated>2013-08-04T19:21:00+05:30</updated>
-    <id>http://sajithdilshan.github.io/blog/blog/2013/08/04/path-finding-with-bfs</id>
+    <id>http://sajithdilshan.github.io//github/blog/2013/08/04/path-finding-with-bfs</id>
     <content type="html"><![CDATA[<p>So as a part of the programming challenge module I did last semester, we were supposed to build a game which is similar to the Nintendo Tank war game. This was a group project and <a href="https://twitter.com/TharinduRusira">Tharindu</a> and I designed and build the game. What we had to do was to build a client who can communicate with a server. All together five clients can connect with the server simultaneously and the server sends global updates about the position of each clients, positions of coin piles, etc on each second. the clients has to process this global update and send its next move to the server before the next global update is arrived from the server. More details about the server specification is available <a href="https://docs.google.com/file/d/0B0SvcTAspdLrNHdJalc5elpiM28/edit">here</a>.</p>
 
 <p>So the main objective of the game is to collect as many coin piles as possible. The game is played on a 2D cell matrix as you can see on the below image. So what we had to do first was to create a suitable data structure which can be used by the path finding algorithm efficiently.</p>
