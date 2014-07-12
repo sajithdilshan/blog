@@ -2,44 +2,50 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>http://sajithdilshan.github.io/blog/blog/2013/06/23/sexy/</loc>
-        <lastmod>2014-07-12T14:09:04+05:30</lastmod>
+        <lastmod>2014-07-12T14:30:15+05:30</lastmod>
     </url>
     <url>
         <loc>http://sajithdilshan.github.io/blog/blog/2013/08/04/path-finding-with-bfs/</loc>
-        <lastmod>2014-07-12T14:09:04+05:30</lastmod>
+        <lastmod>2014-07-12T14:30:15+05:30</lastmod>
     </url>
     <url>
         <loc>http://sajithdilshan.github.io/blog/blog/2013/08/11/facing-an-interview/</loc>
-        <lastmod>2014-07-12T14:19:48+05:30</lastmod>
+        <lastmod>2014-07-12T14:30:15+05:30</lastmod>
     </url>
     <url>
         <loc>http://sajithdilshan.github.io/blog/blog/2013/08/21/ajax-with-ruby-on-rails/</loc>
-        <lastmod>2014-07-12T14:09:04+05:30</lastmod>
+        <lastmod>2014-07-12T14:30:15+05:30</lastmod>
     </url>
     <url>
         <loc>http://sajithdilshan.github.io/blog/blog/2013/09/29/mate-panel-with-luna/</loc>
-        <lastmod>2014-07-12T14:09:04+05:30</lastmod>
+        <lastmod>2014-07-12T14:30:15+05:30</lastmod>
     </url>
     <url>
         <loc>
             http://sajithdilshan.github.io/blog/blog/2014/02/14/intellij-idea-plugin-for-ultraesb/
         </loc>
-        <lastmod>2014-07-12T14:09:04+05:30</lastmod>
+        <lastmod>2014-07-12T14:30:15+05:30</lastmod>
     </url>
     <url>
         <loc>http://sajithdilshan.github.io/blog/blog/2014/03/26/the-woes-of-websockets/</loc>
-        <lastmod>2014-07-12T14:09:04+05:30</lastmod>
+        <lastmod>2014-07-12T14:30:15+05:30</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://sajithdilshan.github.io/blog/blog/2014/07/12/transform-freya-into-yosemite/
+        </loc>
+        <lastmod>2014-07-12T14:53:42+05:30</lastmod>
     </url>
     <url>
         <loc>http://sajithdilshan.github.io/blog/blog/archives/</loc>
-        <lastmod>2014-07-12T14:19:48+05:30</lastmod>
+        <lastmod>2014-07-12T14:53:42+05:30</lastmod>
     </url>
     <url>
         <loc>http://sajithdilshan.github.io/blog/</loc>
-        <lastmod>2014-07-12T14:19:48+05:30</lastmod>
+        <lastmod>2014-07-12T14:53:42+05:30</lastmod>
     </url>
     <url>
         <loc>http://sajithdilshan.github.io/blog/robots.txt</loc>
-        <lastmod>2014-07-12T14:09:04+05:30</lastmod>
+        <lastmod>2014-07-12T14:30:15+05:30</lastmod>
     </url>
 </urlset>
