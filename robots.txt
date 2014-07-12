@@ -1,4 +1,4 @@
 User-agent: *
 Disallow: 
 
-Sitemap: http://sajithdilshan.github.io//github/sitemap.xml 
+Sitemap: http://sajithdilshan.github.io/blog/sitemap.xml 

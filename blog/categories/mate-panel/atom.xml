@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: Mate Panel | _here be dragons_]]></title>
-  <link href="http://sajithdilshan.github.io//github/blog/categories/mate-panel/atom.xml" rel="self"/>
-  <link href="http://sajithdilshan.github.io//github/"/>
-  <updated>2014-07-12T14:22:45+05:30</updated>
-  <id>http://sajithdilshan.github.io//github/</id>
+  <link href="http://sajithdilshan.github.io/blog/blog/categories/mate-panel/atom.xml" rel="self"/>
+  <link href="http://sajithdilshan.github.io/blog/"/>
+  <updated>2014-07-12T14:27:29+05:30</updated>
+  <id>http://sajithdilshan.github.io/blog/</id>
   <author>
     <name><![CDATA[Sajith Dilshan]]></name>
     
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Mate Panel With Luna]]></title>
-    <link href="http://sajithdilshan.github.io//github/blog/2013/09/29/mate-panel-with-luna/"/>
+    <link href="http://sajithdilshan.github.io/blog/blog/2013/09/29/mate-panel-with-luna/"/>
     <updated>2013-09-29T04:47:00+05:30</updated>
-    <id>http://sajithdilshan.github.io//github/blog/2013/09/29/mate-panel-with-luna</id>
+    <id>http://sajithdilshan.github.io/blog/blog/2013/09/29/mate-panel-with-luna</id>
     <content type="html"><![CDATA[<p>So this tutorial is about how to install mate-panel in Elementary OS Luna. Let&rsquo;s just get started right away.</p>
 
 <p>First we need to add the mate repository to our system. Keep in mind this is only for precise (Ubuntu 12.04) systems. Open a terminal and run below command.</p>
