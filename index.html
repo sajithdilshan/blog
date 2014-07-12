@@ -1,1 +1,748 @@
-My Octopress Page is coming soon &hellip;
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>_here be dragons_</title>
+  <meta name="author" content="Sajith Dilshan">
+
+  
+  <meta name="description" content="Lately I&rsquo;ve been developing a server side implementation of Web Socket Protocol and I must say even though the core concept of Web Socket &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://sajithdilshan.github.io/blog">
+  <link href="/blog/favicon.png" rel="icon">
+  <link href="/blog/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/blog/atom.xml" rel="alternate" title="_here be dragons_" type="application/atom+xml">
+  <script src="/blog/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/blog/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="//fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="//fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-41953855-1']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/blog/">_here be dragons_</a></h1>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/blog/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:sajithdilshan.github.io/blog" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/blog/">Blog</a></li>
+  <li><a href="/blog/blog/archives">Archives</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div class="blog-index">
+  
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/blog/2014/03/26/the-woes-of-websockets/">The Woes of WebSockets</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-26T12:49:00+05:30" pubdate data-updated="true">Mar 26<span>th</span>, 2014</time>
+        
+           | <a href="/blog/blog/2014/03/26/the-woes-of-websockets/#disqus_thread"
+             data-disqus-identifier="http://sajithdilshan.github.io/blog/blog/2014/03/26/the-woes-of-websockets/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Lately I&rsquo;ve been developing a server side implementation of <a href="https://tools.ietf.org/html/rfc6455">Web Socket Protocol</a> and I must say even though the core concept of Web Socket protocol is awesome, its framing specification has got it all wrong. Let&rsquo;s start with the definition of a Web Socket frame.</p>
+
+<pre><code> 0                   1                   2                   3
+  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ +-+-+-+-+-------+-+-------------+-------------------------------+
+ |F|R|R|R| opcode|M| Payload len |    Extended payload length    |
+ |I|S|S|S|  (4)  |A|     (7)     |             (16/64)           |
+ |N|V|V|V|       |S|             |   (if payload len==126/127)   |
+ | |1|2|3|       |K|             |                               |
+ +-+-+-+-+-------+-+-------------+ - - - - - - - - - - - - - - - +
+ |     Extended payload length continued, if payload len == 127  |
+ + - - - - - - - - - - - - - - - +-------------------------------+
+ |                               |Masking-key, if MASK set to 1  |
+ +-------------------------------+-------------------------------+
+ | Masking-key (continued)       |          Payload Data         |
+ +-------------------------------- - - - - - - - - - - - - - - - +
+ :                     Payload Data continued ...                :
+ + - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - +
+ |                     Payload Data continued ...                |
+ +---------------------------------------------------------------+
+</code></pre>
+
+<p>As you can see above, it is a total mess. My biggest complain is about the masking of frame&rsquo;s payload when they are sent from a client to a server. The purpose of this masking is to prevent <a href="https://tools.ietf.org/html/rfc6455#page-51">cache poisoning in proxies</a>. But what does cache poisoning got to do with the Web Socket protocol? It is a vulnerability found on really old out-of-date proxies and why does Web Socket protocol has to pay the price for that?</p>
+
+<p>The real problem occurs when unmasking the frame&rsquo;s payload. You have to XOR the masked payload with the mask key and need I remind you that XORing is CPU intensive when you have to unmask thousands of frames per minute. Why don&rsquo;t we just let those old proxies suffer the cache poisoning (proxy users could either upgrade to a new version or the proxy vendor could release a patch for this particular vulnerability) and rid the Web Sockets from this misery of masking.</p>
+
+<p>The next problem is the payload length. 64 bits can be to specify the number of bytes in the payload. That means 2<sup>64</sup> = <a href="http://www.wolframalpha.com/input/?i=2%5E64">18 quintillion</a>, which is more bytes than the <a href="http://www.wolframalpha.com/input/?i=number+of+stars+in+the+Milky+Way+galaxy">number of stars in the Milky Way galaxy</a>. Is it really practical to use such a large payload? Apart from that, there is another feature of continuous frames to handle such scenario.</p>
+
+<p>Let&rsquo;s use a fixed size of 4 bytes(size of an integer) to specify the payload length. If the payload is larger than that, one could use the continuous framing mechanism. Having a fixed number of bytes to represent the payload length is always better than a dynamic size.</p>
+
+<p>After applying above improvements, I present you a more practical definition of a Web Socket frame as below. What do you think about it?</p>
+
+<pre><code> 0                   1                   2                   3
+  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ +-+-+-+-+-------+-+-------------+-------------------------------+
+ |F|R|R|R| opcode|         Payload length (Fixed Size)           |
+ |I|S|S|S|  (4)  |                  (32)                         |
+ |N|V|V|V|       |                                               |
+ | |1|2|3|       |                                               |
+ +-+-+-+-+-------+-+-------------+ - - - - - - - - - - - - - - - +
+ |Payload length |          Payload Data                         |
+ +-------------------------------- - - - - - - - - - - - - - - - +
+ :                     Payload Data continued ...                :
+ + - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - +
+ |                     Payload Data continued ...                |
+ +---------------------------------------------------------------+
+</code></pre>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/blog/2014/02/14/intellij-idea-plugin-for-ultraesb/">IntelliJ IDEA Plugin for UltraESB</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-02-14T19:04:00+05:30" pubdate data-updated="true">Feb 14<span>th</span>, 2014</time>
+        
+           | <a href="/blog/blog/2014/02/14/intellij-idea-plugin-for-ultraesb/#disqus_thread"
+             data-disqus-identifier="http://sajithdilshan.github.io/blog/blog/2014/02/14/intellij-idea-plugin-for-ultraesb/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Recently I&rsquo;ve developed an IntelliJ IDEA plugin for <a href="http://www.adroitlogic.org/products/ultraesb.html">UltraESB</a> with few features and while doing that I&rsquo;ve learned so much about the plugin development for IDEA. And also if you&rsquo;re an ultraesb developer, by installing this plugin you&rsquo;ll be able to enjoy below mentioned features.</p>
+
+<h3>Creating multi module projects and deployment units</h3>
+
+<p><img src="http://docs.adroitlogic.org/download/attachments/11174355/unita-2.png" title="'New Deployment Unit Wizard'" ></p>
+
+<p>You can create new Multi-Module projects and new Deployment UNits straight from the new project/module wizard respectively. All you have to do is fill out the necessary fields and IDEA will do the rest for you.</p>
+
+<h3>File templates, Live templates, Language injection and Code generation</h3>
+
+<p><img src="http://docs.adroitlogic.org/download/attachments/11174358/inject.png" title="'Java language injection'" ></p>
+
+<p>This plugin contains new sequence file template, few live templates, Java language injection for XML tags and code generation facility. You can simply read the <a href="http://docs.adroitlogic.org/display/esb/IntelliJ+IDEA+Plugin">full documentationn</a> of the plugin to know more.</p>
+
+<p>I&rsquo;m planning to write a series of tutorials explaining how I implemented each and every feature. The plugin is open source and the source code is available here. You can download the plugin straight from Jetbrain&rsquo;s <a href="http://plugins.jetbrains.com/plugin/7396">plugin repositoryy</a></p>
+
+<p>In the future we&rsquo;re planing to integrate <a href="http://confluence.jetbrains.com/display/IDEADEV/Spring+API+Guide">Spring Open API</a> into the plugin so that we can provide navigation and refactoring facilities for the proxy, endpoint and sequence beans.</p>
+
+<p>And last but not least I&rsquo;d like to thank IntelliJ IDEA <a href="http://devnet.jetbrains.com/community/idea/open_api_and_plugin_development">Open API and Plugin Development communityy</a> especially <a href="http://devnet.jetbrains.com/people/AlexanderD">Alexander Doroshko</a> and <a href="http://devnet.jetbrains.com/people/yannc76">Yann Cebron</a> for providing immense support.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/blog/2013/09/29/mate-panel-with-luna/">Mate Panel With Luna</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-09-29T04:47:00+05:30" pubdate data-updated="true">Sep 29<span>th</span>, 2013</time>
+        
+           | <a href="/blog/blog/2013/09/29/mate-panel-with-luna/#disqus_thread"
+             data-disqus-identifier="http://sajithdilshan.github.io/blog/blog/2013/09/29/mate-panel-with-luna/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>So this tutorial is about how to install mate-panel in Elementary OS Luna. Let&rsquo;s just get started right away.</p>
+
+<p>First we need to add the mate repository to our system. Keep in mind this is only for precise (Ubuntu 12.04) systems. Open a terminal and run below command.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo add-apt-repository "deb http://packages.mate-desktop.org/repo/ubuntu/ precise main" && sudo apt-get update</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now we need to install mate panel and its dependencies. And also the required indicator-applets.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo apt-get install mate-panel mate-core gtk2-engines-pixbuf mate-indicator-applet appmenu-gtk appmenu-gtk3 indicator-appmenu-gtk2 indicator-sound-gtk2 indicator-application-gtk2 indicator-datetime-gtk2 indicator-session-gtk2</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now we are all set. We just have to replace wingpanel with mate panel. Inorder to do that open dconf-editor and navigate to org &ndash;> pantheon &ndash;> cerbere and in the &ldquo;monitored-processes&rdquo; section replace wingpanel with mate-panel like in the below image. After that logout and login again.</p>
+
+<p><img src="https://dl.dropboxusercontent.com/u/30358512/blog/1.png"></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/blog/2013/09/29/mate-panel-with-luna/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/blog/2013/08/21/ajax-with-ruby-on-rails/">AJAX With Ruby on Rails</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-21T17:28:00+05:30" pubdate data-updated="true">Aug 21<span>st</span>, 2013</time>
+        
+           | <a href="/blog/blog/2013/08/21/ajax-with-ruby-on-rails/#disqus_thread"
+             data-disqus-identifier="http://sajithdilshan.github.io/blog/blog/2013/08/21/ajax-with-ruby-on-rails/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>As for the Software Engineering Project module in this semester I&rsquo;m building a feed reader(similar to Google reader) using ruby on rails. And for this project I&rsquo;ve been using AJAX heavily and Below is a simple tutorial to use AJAX with RoR.</p>
+
+<p>So here&rsquo;s the scenario. A list of feed subscriptions is displayed and when a user clicks on a item in that list, AJAX request is sent to the server to fetch the feed items(posts) of that feed and it is displayed inside the DIV tag with the id &ldquo;feedlistcontainer&rdquo;. Let&rsquo;s assume the corresponding modelname is userfeed.rb and the controller is userfeeds_controller.rb</p>
+
+<figure class='code'><figcaption><span>app/views/userfeeds/index.html.haml </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='haml'><span class='line'><span class="nt">%div</span><span class="nc">.row</span>
+</span><span class='line'>  <span class="nt">%div</span><span class="nc">.col-md-9.col-md-push-3</span>
+</span><span class='line'>    <span class="nt">%div</span><span class="p">{</span><span class="s2">&quot;id&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;feedlistcontainer&quot;</span><span class="p">}</span>
+</span><span class='line'>       <span class="p">=</span> <span class="n">render</span> <span class="ss">partial</span><span class="p">:</span> <span class="s2">&quot;_feedlist&quot;</span>
+</span><span class='line'>  <span class="nt">%div</span><span class="nc">.col-md-3.col-md-pull-9</span>
+</span><span class='line'>    <span class="nt">%div</span><span class="nc">.row</span>
+</span><span class='line'>      <span class="nt">%p</span> Your Subscriptions
+</span><span class='line'>      <span class="nt">%div</span><span class="nc">.list-group</span>
+</span><span class='line'>      <span class="p">-</span> <span class="k">if</span> <span class="vi">@feeditems</span><span class="o">.</span><span class="n">nil?</span>
+</span><span class='line'>        <span class="nt">%p</span> No subscriptions available
+</span><span class='line'>      <span class="p">-</span> <span class="k">else</span>
+</span><span class='line'>        <span class="p">-</span> <span class="vi">@feeditems</span><span class="o">.</span><span class="n">each_with_index</span> <span class="k">do</span> <span class="o">|</span><span class="n">feeditem</span><span class="p">,</span><span class="n">index</span><span class="o">|</span>
+</span><span class='line'>          <span class="c">/ %span.badge 14</span>
+</span><span class='line'>          <span class="p">=</span> <span class="n">link_to</span> <span class="n">feeditem</span><span class="o">.</span><span class="n">feed_name</span><span class="p">,</span> <span class="n">show_feed_list_path</span><span class="p">(</span><span class="ss">:feed_id</span> <span class="o">=&gt;</span> <span class="n">feeditem</span><span class="o">.</span><span class="n">id</span><span class="p">),</span> <span class="ss">:class</span> <span class="o">=&gt;</span><span class="s2">&quot;list-group-item&quot;</span><span class="p">,</span> <span class="ss">remote</span><span class="p">:</span> <span class="kp">true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>app/views/userfeeds/_feedlist.html.haml </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='haml'><span class='line'><span class="nt">%div</span><span class="nc">.panel-group</span><span class="p">{</span><span class="s2">&quot;id&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;accordion&quot;</span><span class="p">}</span>
+</span><span class='line'>  <span class="p">-</span> <span class="k">if</span> <span class="vi">@feeditem_list</span><span class="o">.</span><span class="n">nil?</span>
+</span><span class='line'>    <span class="nt">%p</span> no item here
+</span><span class='line'>  <span class="p">-</span> <span class="k">else</span>
+</span><span class='line'>    <span class="p">-</span> <span class="vi">@feeditem_list</span><span class="o">.</span><span class="n">each_with_index</span> <span class="k">do</span> <span class="o">|</span><span class="n">feeditem</span><span class="p">,</span> <span class="n">index</span><span class="o">|</span>
+</span><span class='line'>      <span class="p">-</span> <span class="vg">$item_id</span> <span class="o">=</span> <span class="n">feeditem</span><span class="o">.</span><span class="n">id</span>
+</span><span class='line'>      <span class="nt">%div</span><span class="nc">.panel</span><span class="p">{</span><span class="s2">&quot;id&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;panel</span><span class="si">#{</span><span class="vg">$item_id</span><span class="si">}</span>&quot;}
+</span><span class='line'>        <span class="nt">%div</span><span class="nc">.panel-heading</span>
+</span><span class='line'>          <span class="nt">%h4</span><span class="nc">.panel-title</span>
+</span><span class='line'>            <span class="nt">%a</span><span class="nc">.accordion-toggle</span><span class="p">{</span><span class="s2">&quot;data-toggle&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;collapse&quot;</span><span class="p">,</span> <span class="s2">&quot;data-parent&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;#accordion&quot;</span><span class="p">,</span> <span class="s2">&quot;href&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;#feed</span><span class="si">#{</span><span class="vg">$item_id</span><span class="si">}</span>&quot;}
+</span><span class='line'>              <span class="p">=</span> <span class="n">feeditem</span><span class="o">.</span><span class="n">post_title</span>
+</span><span class='line'>        <span class="nt">%div</span><span class="nc">.panel-collapse.collapse</span><span class="p">{</span><span class="s2">&quot;id&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;feed</span><span class="si">#{</span><span class="vg">$item_id</span><span class="si">}</span>&quot;}
+</span><span class='line'>          <span class="nt">%div</span><span class="nc">.panel-body</span>
+</span><span class='line'>              <span class="nt">%p</span><span class="p">=</span> <span class="n">feeditem</span><span class="o">.</span><span class="n">post_body</span><span class="o">.</span><span class="n">html_safe</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Keep in mind that I&rsquo;ve used bootstrap 3 with the project, hence different class names for DIV tags. So above index.html.haml renders feed list inside &ldquo;div.col-md-3.col-md-pull-9&rdquo; tag. The userfeeds_controller initializes the @feeditems variable with an iteratable object of &ldquo;feeds&rdquo; which was returned to it by a model. Then it iterates over that object and for each entry it creates a link with remote link. Notify the &ldquo;remote: true&rdquo; syntax. That is the syntax which specifies that this is not a regular link, but it is an AJAX call. By clicking on that link, it will generate a GET remote rquest to show_feed_list_path and it will populate param hash with &ldquo;:feed_id => feeditem.id&rdquo; value. We have to add below code in the routes.rb file defining the show_feed_list_path</p>
+
+<figure class='code'><figcaption><span>routes.rb </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">get</span> <span class="s2">&quot;show_feed_list&quot;</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="s2">&quot;userfeeds#show_feed_list&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And also feed items are rendered inside &ldquo;div{&#8220;id&rdquo; => &ldquo;feedlistcontainer&rdquo;}&ldquo; tag. I&rsquo;ve used an accordion to diplay the post list(feed items). The @feeditem_list will be initialized by the userfeeds_controller after the AJAX call.</p>
+
+<p>Below is the userfeed_controller code corresponding to the above view template</p>
+
+<figure class='code'><figcaption><span>app/controllers/userfeeds_controller.rb </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">index</span>
+</span><span class='line'>    <span class="vi">@feeditems</span> <span class="o">=</span> <span class="no">Userfeed</span><span class="o">.</span><span class="n">getUserFeedList</span><span class="p">(</span><span class="n">currentuser</span><span class="o">.</span><span class="n">userid</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">show_feed_list</span>
+</span><span class='line'>    <span class="n">feed_id</span> <span class="o">=</span> <span class="n">params</span><span class="o">[</span><span class="ss">:feed_id</span><span class="o">]</span>
+</span><span class='line'>    <span class="vi">@feeditem_list</span> <span class="o">=</span> <span class="no">Userfeed</span><span class="o">.</span><span class="n">get_feed_list</span><span class="p">(</span><span class="n">feed_id</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">respond_to</span> <span class="k">do</span> <span class="o">|</span><span class="nb">format</span><span class="o">|</span>
+</span><span class='line'>      <span class="nb">format</span><span class="o">.</span><span class="n">js</span>   <span class="c1"># show_feed_list.js.haml</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>What this code does is in the index method it initialized the @feeditems variable with an iteratable object which contains a list of feed subscriptions of a particular user.&ldquo;Userfeed.getUserFeedList(currentuser.userid)&rdquo; method call can be different depending on how the Models are defined in the application. But the general ide is that @feeditems variable is initialized with a feed list somehow.</p>
+
+<p>The After the ajax call show_feed_list method gets called. We extract the ID of the feed from param hash and using that we initialize @feeditem_list variable with an iteratable object of posts(feed items) in that particular feed. Again &ldquo;Userfeed.get_feed_list(feed_id)&rdquo; can be different. All we have to do is somehow initialize the @feeditem_list with corresponding post list.</p>
+
+<p>Then it will pass this @feeditem_list to a file name &ldquo;show_feed_list.js.haml&rdquo;. Remember RoR uses convention over configuration. So that&rsquo;s why it is passing the @feeditem_list to a javascript file with the same name of the method &ldquo;show_feed_list&rdquo;.</p>
+
+<figure class='code'><figcaption><span>app/views/userfeeds/show_feed_list.js.haml </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='haml'><span class='line'>$(&#39;#feedlistcontainer&#39;).html(&quot;<span class="si">#{</span><span class="n">j</span><span class="p">(</span><span class="n">render</span><span class="p">(</span><span class="s2">&quot;feedlist&quot;</span><span class="p">,</span> <span class="ss">:feeditem_list</span> <span class="o">=&gt;</span> <span class="vi">@feeditem_list</span><span class="p">))</span><span class="si">}</span>&quot;)
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Above is the content of the java script file. It will render the <em>feedlist.html.haml inside the DIV tag with id &ldquo;feedlistcontainer&rdquo; and pass the @feeditem_list variable from controller to the </em>feedlist.html.haml template. And that&rsquo;s it. We don&rsquo;t need extensive knowledge on java script or JQuery at all.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/blog/2013/08/11/facing-an-interview/">Facing an Interview</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-11T15:30:00+05:30" pubdate data-updated="true">Aug 11<span>th</span>, 2013</time>
+        
+           | <a href="/blog/blog/2013/08/11/facing-an-interview/#disqus_thread"
+             data-disqus-identifier="http://sajithdilshan.github.io/blog/blog/2013/08/11/facing-an-interview/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Last week I got the chance to face an interview for the position of a Softwre Engineer, (Intern)  and I thought I would share the details. Hope this would be helpful for anyone who is looking for some tips before going to an interview.</p>
+
+<p>So let&rsquo;s start with the CV. When you&rsquo;re preparing the CV don&rsquo;t include each and every achievement, experience and project you did. CV is mainly a marketing document. Do some research on the company you&rsquo;re applying, and customize your CV so that it only includes relevant data about yourself, which might come in handy if you get to work in that particular company. (E.g. If a company is heavily using a particular framework, emphasis your experience and the projects you did using that framework.)</p>
+
+<p>If you&rsquo;re adding a project that you did on the CV, you&rsquo;re expected to answer any question regarding that project. So if you decide to include a group project, you should know all the aspects of it. When the interviewer asks a question about the client-server communication aspect of a particular project, you shouldn&rsquo;t say that &ldquo;I only did the database part and I have no idea about the communication part&rdquo;. It would only display your ignorance and negligence.</p>
+
+<p>And keep in mind to add your interest in the CV too. Don&rsquo;t add a particular topic just because it is the current trend. Instead add topics which are relevant and you&rsquo;re passionate about.</p>
+
+<p>Before going to the interview, polish your knowledge on certain topics like OOP principles, databases, design patterns, algorithms and languages like Java. You can Google and find out what kind of questions are asked frequently in interviews from above topics. And also don&rsquo;t forget to research and get the gist of the technologies which are mostly used by that particular company you&rsquo;re applying.</p>
+
+<p>When going for the interview, wear something simple, but professional. And get to the place at least 15 minutes early. Always be polite, smile, pay your full attention to the interviewer and do not lie under any circumstance. If you don&rsquo;t know the answer to a question, be humble enough to say that you don&rsquo;t know. When answering the questions don&rsquo;t rush, take your time and explain yourself clearly. If you don&rsquo;t understand the question, politely ask to explain it a bit more instead of answering without comprehending the question. Keep in mind that having good communication skills can play a key role in an interview. You might be a really intelligent person, but poor communication skills might let you down. So if you think that there is room for improvements, better get started working on that right away.</p>
+
+<p>Last but not least, and interview is a chance to market yourself and to convince the other party that you&rsquo;re the one they&rsquo;re looking for and you&rsquo;d be  a valuable asset for the company. And if you failed to do that analyze what you did wrong, learn your lessons and be more prepared for the next opportunity.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/blog/2013/08/04/path-finding-with-bfs/">Path Finding With BFS</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-08-04T19:21:00+05:30" pubdate data-updated="true">Aug 4<span>th</span>, 2013</time>
+        
+           | <a href="/blog/blog/2013/08/04/path-finding-with-bfs/#disqus_thread"
+             data-disqus-identifier="http://sajithdilshan.github.io/blog/blog/2013/08/04/path-finding-with-bfs/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>So as a part of the programming challenge module I did last semester, we were supposed to build a game which is similar to the Nintendo Tank war game. This was a group project and <a href="https://twitter.com/TharinduRusira">Tharindu</a> and I designed and build the game. What we had to do was to build a client who can communicate with a server. All together five clients can connect with the server simultaneously and the server sends global updates about the position of each clients, positions of coin piles, etc on each second. the clients has to process this global update and send its next move to the server before the next global update is arrived from the server. More details about the server specification is available <a href="https://docs.google.com/file/d/0B0SvcTAspdLrNHdJalc5elpiM28/edit">here</a>.</p>
+
+<p>So the main objective of the game is to collect as many coin piles as possible. The game is played on a 2D cell matrix as you can see on the below image. So what we had to do first was to create a suitable data structure which can be used by the path finding algorithm efficiently.</p>
+
+<p><img src="https://dl.dropboxusercontent.com/u/30358512/Untitled.jpg" title="Tanks War GUI" ></p>
+
+</div>
+  
+  
+    <footer>
+      <a rel="full-article" href="/blog/blog/2013/08/04/path-finding-with-bfs/">Read on &rarr;</a>
+    </footer>
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/blog/2013/06/23/sexy/">Sexy, Slim Wingpanel</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-06-23T16:33:00+05:30" pubdate data-updated="true">Jun 23<span>rd</span>, 2013</time>
+        
+           | <a href="/blog/blog/2013/06/23/sexy/#disqus_thread"
+             data-disqus-identifier="http://sajithdilshan.github.io/blog/blog/2013/06/23/sexy/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>If you are already using Elementary OS Luna then you don&rsquo;t need any introduction about wingpanel. But if you are not using eOS, then it is a top panel, similar to one you had in gnome 2 which displayed indicators and date/time.</p>
+
+<p>But in this new slim wingplanel version, developed by <a href="https://plus.google.com/107828869706749088966">Heath Paddock</a> the panel&rsquo;s width is reduced only to display the indicator icons and hovers over windows, hence maximizing the available vertical pixels for content as you can see in the below image.</p>
+
+<p><img src="https://dl.dropboxusercontent.com/u/30358512/blog/sc1.png" title="Slim wingpanel with maximized window" alt="Slim wingpanel with maximized window"></p>
+
+<p>You can insatll this slim wingpanel in eOS luna by using following commands</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo add-apt-repository ppa:sajithdilshan/wingpanelslim-daily
+</span><span class='line'>sudo apt-get update</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>echo "Package: *
+</span><span class='line'>Pin: release o=LP-PPA-sajithdilshan-wingpanelslim-daily
+</span><span class='line'>Pin-Priority: 1200" | sudo tee /etc/apt/preferences.d/sajithdilshan-wingpanelslim-daily.pref</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo apt-get update
+</span><span class='line'>sudo apt-get install wingpanel</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The only downside of this is that there is no icon/link to launch slingshot. But you can either use super+spacebar keyboard shortcut to launch slingshot or install synapse search search indicator. Use instructions on <a href="http://www.webupd8.org/2013/06/synapse-indicator-new-search.html">this site</a> to install synapse search indicator and you can launch it using super+alt+spacebar key combinations.</p>
+
+<p>Below is a screenshot of synapse search indicator in action.</p>
+
+<p><img src="https://dl.dropboxusercontent.com/u/30358512/blog/sc2.png" title="'Synapse search indicator'" ></p>
+</div>
+  
+  
+
+
+    </article>
+  
+  <div class="pagination">
+    
+    <a href="/blog/blog/archives">Blog Archives</a>
+    
+  </div>
+</div>
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/blog/2014/03/26/the-woes-of-websockets/">The Woes of WebSockets</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/blog/2014/02/14/intellij-idea-plugin-for-ultraesb/">IntelliJ IDEA Plugin for UltraESB</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/blog/2013/09/29/mate-panel-with-luna/">Mate Panel With Luna</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/blog/2013/08/21/ajax-with-ruby-on-rails/">AJAX With Ruby on Rails</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/blog/2013/08/11/facing-an-interview/">Facing an Interview</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating&#8230;</li>
+  </ul>
+  
+  <a href="https://github.com/sajithdilshan">@sajithdilshan</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'sajithdilshan',
+            count: 5,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/blog/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+
+
+  
+</aside>
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Sajith Dilshan -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'sajithblog';
+      
+        
+        var disqus_script = 'count.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

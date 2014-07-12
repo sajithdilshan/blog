@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: UltraESB | _here be dragons_]]></title>
+  <link href="http://sajithdilshan.github.io/blog/blog/categories/ultraesb/atom.xml" rel="self"/>
+  <link href="http://sajithdilshan.github.io/blog/"/>
+  <updated>2014-07-12T14:20:05+05:30</updated>
+  <id>http://sajithdilshan.github.io/blog/</id>
+  <author>
+    <name><![CDATA[Sajith Dilshan]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[IntelliJ IDEA Plugin for UltraESB]]></title>
+    <link href="http://sajithdilshan.github.io/blog/blog/2014/02/14/intellij-idea-plugin-for-ultraesb/"/>
+    <updated>2014-02-14T19:04:00+05:30</updated>
+    <id>http://sajithdilshan.github.io/blog/blog/2014/02/14/intellij-idea-plugin-for-ultraesb</id>
+    <content type="html"><![CDATA[<p>Recently I&rsquo;ve developed an IntelliJ IDEA plugin for <a href="http://www.adroitlogic.org/products/ultraesb.html">UltraESB</a> with few features and while doing that I&rsquo;ve learned so much about the plugin development for IDEA. And also if you&rsquo;re an ultraesb developer, by installing this plugin you&rsquo;ll be able to enjoy below mentioned features.</p>
+
+<h3>Creating multi module projects and deployment units</h3>
+
+<p><img class="<a" src="href="http://docs.adroitlogic.org/download/attachments/11174355/unita-2.png">http://docs.adroitlogic.org/download/attachments/11174355/unita-2.png</a>" title="&lsquo;New Deployment Unit Wizard&rsquo;" ></p>
+
+<p>You can create new Multi-Module projects and new Deployment UNits straight from the new project/module wizard respectively. All you have to do is fill out the necessary fields and IDEA will do the rest for you.</p>
+
+<h3>File templates, Live templates, Language injection and Code generation</h3>
+
+<p><img class="<a" src="href="http://docs.adroitlogic.org/download/attachments/11174358/inject.png">http://docs.adroitlogic.org/download/attachments/11174358/inject.png</a>" title="&lsquo;Java language injection&rsquo;" ></p>
+
+<p>This plugin contains new sequence file template, few live templates, Java language injection for XML tags and code generation facility. You can simply read the <a href="http://docs.adroitlogic.org/display/esb/IntelliJ+IDEA+Plugin">full documentationn</a> of the plugin to know more.</p>
+
+<p>I&rsquo;m planning to write a series of tutorials explaining how I implemented each and every feature. The plugin is open source and the source code is available here. You can download the plugin straight from Jetbrain&rsquo;s <a href="http://plugins.jetbrains.com/plugin/7396">plugin repositoryy</a></p>
+
+<p>In the future we&rsquo;re planing to integrate <a href="http://confluence.jetbrains.com/display/IDEADEV/Spring+API+Guide">Spring Open API</a> into the plugin so that we can provide navigation and refactoring facilities for the proxy, endpoint and sequence beans.</p>
+
+<p>And last but not least I&rsquo;d like to thank IntelliJ IDEA <a href="http://devnet.jetbrains.com/community/idea/open_api_and_plugin_development">Open API and Plugin Development communityy</a> especially <a href="http://devnet.jetbrains.com/people/AlexanderD">Alexander Doroshko</a> and <a href="http://devnet.jetbrains.com/people/yannc76">Yann Cebron</a> for providing immense support.</p>
+]]></content>
+  </entry>
+  
+</feed>
