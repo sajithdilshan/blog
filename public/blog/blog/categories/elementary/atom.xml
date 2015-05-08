@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Elementary | _here be dragons_]]></title>
+  <link href="http://sajithdilshan.github.io/blog/blog/categories/elementary/atom.xml" rel="self"/>
+  <link href="http://sajithdilshan.github.io/blog/"/>
+  <updated>2015-05-08T09:53:05+05:30</updated>
+  <id>http://sajithdilshan.github.io/blog/</id>
+  <author>
+    <name><![CDATA[Sajith Dilshan]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Sexy, Slim Wingpanel]]></title>
+    <link href="http://sajithdilshan.github.io/blog/blog/2013/06/23/sexy/"/>
+    <updated>2013-06-23T16:33:00+05:30</updated>
+    <id>http://sajithdilshan.github.io/blog/blog/2013/06/23/sexy</id>
+    <content type="html"><![CDATA[<p>If you are already using Elementary OS Luna then you don&rsquo;t need any introduction about wingpanel. But if you are not using eOS, then it is a top panel, similar to one you had in gnome 2 which displayed indicators and date/time.</p>
+
+<p>But in this new slim wingplanel version, developed by <a href="https://plus.google.com/107828869706749088966">Heath Paddock</a> the panel&rsquo;s width is reduced only to display the indicator icons and hovers over windows, hence maximizing the available vertical pixels for content as you can see in the below image.</p>
+
+<p><img class="<a" src="href="https://dl.dropboxusercontent.com/u/30358512/blog/sc1.png">https://dl.dropboxusercontent.com/u/30358512/blog/sc1.png</a>" title="&lsquo;Slim wingpanel with maximized window&rsquo; &lsquo;Slim wingpanel with maximized window&rsquo;" ></p>
+
+<p>You can insatll this slim wingpanel in eOS luna by using following commands</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo add-apt-repository ppa:sajithdilshan/wingpanelslim-daily
+</span><span class='line'>sudo apt-get update</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>echo &ldquo;Package: *
+</span><span class='line'>Pin: release o=LP-PPA-sajithdilshan-wingpanelslim-daily
+</span><span class='line'>Pin-Priority: 1200&rdquo; | sudo tee /etc/apt/preferences.d/sajithdilshan-wingpanelslim-daily.pref</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo apt-get update
+</span><span class='line'>sudo apt-get install wingpanel</span></code></pre></td></tr></table></div></figure></notextile></div></p>
+
+<p>The only downside of this is that there is no icon/link to launch slingshot. But you can either use super+spacebar keyboard shortcut to launch slingshot or install synapse search search indicator. Use instructions on <a href="http://www.webupd8.org/2013/06/synapse-indicator-new-search.html">this site</a> to install synapse search indicator and you can launch it using super+alt+spacebar key combinations.</p>
+
+<p>Below is a screenshot of synapse search indicator in action.</p>
+
+<p><img class="<a" src="href="https://dl.dropboxusercontent.com/u/30358512/blog/sc2.png">https://dl.dropboxusercontent.com/u/30358512/blog/sc2.png</a>" title="&lsquo;Synapse search indicator&rsquo;" ></p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -1,0 +1,403 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Algorithm | _here be dragons_]]></title>
+  <link href="http://sajithdilshan.github.io/blog/blog/categories/algorithm/atom.xml" rel="self"/>
+  <link href="http://sajithdilshan.github.io/blog/"/>
+  <updated>2015-05-08T09:53:05+05:30</updated>
+  <id>http://sajithdilshan.github.io/blog/</id>
+  <author>
+    <name><![CDATA[Sajith Dilshan]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Path Finding With BFS]]></title>
+    <link href="http://sajithdilshan.github.io/blog/blog/2013/08/04/path-finding-with-bfs/"/>
+    <updated>2013-08-04T19:21:00+05:30</updated>
+    <id>http://sajithdilshan.github.io/blog/blog/2013/08/04/path-finding-with-bfs</id>
+    <content type="html"><![CDATA[<p>So as a part of the programming challenge module I did last semester, we were supposed to build a game which is similar to the Nintendo Tank war game. This was a group project and <a href="https://twitter.com/TharinduRusira">Tharindu</a> and I designed and build the game. What we had to do was to build a client who can communicate with a server. All together five clients can connect with the server simultaneously and the server sends global updates about the position of each clients, positions of coin piles, etc on each second. the clients has to process this global update and send its next move to the server before the next global update is arrived from the server. More details about the server specification is available <a href="https://docs.google.com/file/d/0B0SvcTAspdLrNHdJalc5elpiM28/edit">here</a>.</p>
+
+<p>So the main objective of the game is to collect as many coin piles as possible. The game is played on a 2D cell matrix as you can see on the below image. So what we had to do first was to create a suitable data structure which can be used by the path finding algorithm efficiently.</p>
+
+<p><img class="<a" src="href="https://dl.dropboxusercontent.com/u/30358512/Untitled.jpg">https://dl.dropboxusercontent.com/u/30358512/Untitled.jpg</a>" title="Tanks War GUI" ></p>
+
+<!-- more -->
+
+
+<p>So for each cell we created a class called &ldquo;Cell&rdquo;. It has two constructors. A cell can be initialized either by giving its ID or it&rsquo;s x,y coordinates. It has a list of adjacent neighbor cells(up,down,left,right). A &ldquo;parent&rdquo; variable, which is used in path finding algorithm and boolean variables to set if the cell is an obstacle or a coin pile. The Constant &ldquo;ConfigData.Map_size&rdquo; is either the number of columns or number of rows in the square matrix.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+</pre></td><td class='code'><pre><code class='c#'><span class='line'><span class="k">class</span> <span class="nc">Cell</span><span class="p">&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;{</span>
+</span><span class='line'>    <span class="c1">// implements a cell in the terrain</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">int</span> <span class="n">positionX</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">int</span> <span class="n">positionY</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">int</span> <span class="n">id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>                 <span class="c1">//id of the Cell</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// INTITIALIZE CELL BY THE ID</span>
+</span><span class='line'>    <span class="k">public</span> <span class="nf">Cell</span><span class="p">(</span><span class="kt">int</span> <span class="n">cellid</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="p">.</span><span class="n">id</span> <span class="p">=</span> <span class="n">cellid</span><span class="p">;</span>
+</span><span class='line'>        <span class="c1">//calculate positionX and positionY based on id and MAP_SIZE</span>
+</span><span class='line'>        <span class="kt">double</span> <span class="n">X</span> <span class="p">=</span> <span class="n">Convert</span><span class="p">.</span><span class="n">ToDouble</span><span class="p">(</span><span class="n">id</span> <span class="p">/</span> <span class="n">ConfigData</span><span class="p">.</span><span class="n">MAP_SIZE</span><span class="p">);</span>
+</span><span class='line'>        <span class="kt">double</span> <span class="n">Y</span> <span class="p">=</span> <span class="n">Convert</span><span class="p">.</span><span class="n">ToDouble</span><span class="p">(</span><span class="n">id</span> <span class="p">%</span> <span class="n">ConfigData</span><span class="p">.</span><span class="n">MAP_SIZE</span><span class="p">);</span>
+</span><span class='line'>        <span class="k">this</span><span class="p">.</span><span class="n">positionX</span> <span class="p">=</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">Math</span><span class="p">.</span><span class="n">Floor</span><span class="p">(</span><span class="n">X</span><span class="p">);</span>
+</span><span class='line'>        <span class="k">this</span><span class="p">.</span><span class="n">positionY</span> <span class="p">=</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">Math</span><span class="p">.</span><span class="n">Floor</span><span class="p">(</span><span class="n">Y</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">//  INITIALIZE A CELL BY &amp;lt;X,Y&amp;gt; CO-ORDINTES</span>
+</span><span class='line'>    <span class="k">public</span> <span class="nf">Cell</span><span class="p">(</span><span class="kt">int</span> <span class="n">x</span><span class="p">,</span> <span class="kt">int</span> <span class="n">y</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="p">.</span><span class="n">positionX</span> <span class="p">=</span> <span class="n">x</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">this</span><span class="p">.</span><span class="n">positionY</span> <span class="p">=</span> <span class="n">y</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">this</span><span class="p">.</span><span class="n">id</span> <span class="p">=</span> <span class="n">x</span> <span class="p">*</span> <span class="n">ConfigData</span><span class="p">.</span><span class="n">MAP_SIZE</span> <span class="p">+</span> <span class="n">y</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">public</span> <span class="n">Cell</span> <span class="n">parent</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>                    <span class="c1">//parent cell</span>
+</span><span class='line'>    <span class="k">public</span> <span class="n">List</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">Cell</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">neighbours</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">Cell</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;();</span>    <span class="c1">//Cell list of neighbours</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">bool</span> <span class="n">is_water</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span><span class="c1">// true if water</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">bool</span> <span class="n">is_stone</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>       <span class="c1">//true if stone</span>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">bool</span> <span class="n">is_brick</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>     <span class="c1">//true if brick</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">bool</span> <span class="n">is_coin</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>      <span class="c1">//true if coin pile is in the cell</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+And then we have a &ldquo;World&rdquo; class which is composed of &ldquo;Cell&rdquo; objects. In the constructor of the &ldquo;World&rdquo; class a 2D array of &ldquo;Cell&rdquo; objects is initialized and for each cell in the 2D array, the neighboring cell is added to the neighbor&rsquo;s list. We can get any cell in the 2D array either by its x,y coordinates or the cell ID.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+</pre></td><td class='code'><pre><code class='c#'><span class='line'> <span class="k">class</span> <span class="nc">World</span><span class="p">&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// GAME WILL BE PLAYED IN THIS MATRIX</span>
+</span><span class='line'>    <span class="k">private</span> <span class="n">Cell</span><span class="p">[,]</span> <span class="n">map</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Cell</span><span class="p">[</span><span class="n">ConfigData</span><span class="p">.</span><span class="n">MAP_SIZE</span><span class="p">,</span> <span class="n">ConfigData</span><span class="p">.</span><span class="n">MAP_SIZE</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="cm">/*</span>
+</span><span class='line'><span class="cm">     * 0 20 40 . . . 380</span>
+</span><span class='line'><span class="cm">     * 1 21 41 . . . .</span>
+</span><span class='line'><span class="cm">     * 2 22 42 .   . .</span>
+</span><span class='line'><span class="cm">     * 3 23 43 .   . .</span>
+</span><span class='line'><span class="cm">     * 4 24 44     . .</span>
+</span><span class='line'><span class="cm">     * . . .       . .</span>
+</span><span class='line'><span class="cm">     * . . .       . 398</span>
+</span><span class='line'><span class="cm">     * . . .   . . . 399</span>
+</span><span class='line'><span class="cm">     */</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">public</span> <span class="nf">World</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>        <span class="c1">//INITIALIZE CELLS IN THE MAP</span>
+</span><span class='line'>        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">ConfigData</span><span class="p">.</span><span class="n">MAP_SIZE</span><span class="p">;</span> <span class="n">i</span><span class="p">++)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">j</span> <span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">ConfigData</span><span class="p">.</span><span class="n">MAP_SIZE</span><span class="p">;</span> <span class="n">j</span><span class="p">++)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="n">map</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Cell</span><span class="p">(</span><span class="n">i</span><span class="p">*</span><span class="n">ConfigData</span><span class="p">.</span><span class="n">MAP_SIZE</span><span class="p">+</span><span class="n">j</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">//adds the neighbor cells</span>
+</span><span class='line'>        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">k</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">k</span> <span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">ConfigData</span><span class="p">.</span><span class="n">MAP_SIZE</span><span class="p">;</span> <span class="n">k</span><span class="p">++)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">n</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">n</span> <span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">ConfigData</span><span class="p">.</span><span class="n">MAP_SIZE</span><span class="p">;</span> <span class="n">n</span><span class="p">++)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="n">n</span> <span class="p">-</span> <span class="m">1</span> <span class="p">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="m">0</span><span class="p">)</span>     <span class="c1">//left neighbour</span>
+</span><span class='line'>                    <span class="n">map</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">n</span><span class="p">].</span><span class="n">neighbours</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">map</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">n</span> <span class="p">-</span> <span class="m">1</span><span class="p">]);</span>
+</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="n">k</span> <span class="p">-</span> <span class="m">1</span> <span class="p">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="m">0</span><span class="p">)</span> <span class="c1">//up neighbour</span>
+</span><span class='line'>                    <span class="n">map</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">n</span><span class="p">].</span><span class="n">neighbours</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">map</span><span class="p">[</span><span class="n">k</span> <span class="p">-</span> <span class="m">1</span><span class="p">,</span> <span class="n">n</span><span class="p">]);</span>
+</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="n">n</span> <span class="p">+</span> <span class="m">1</span> <span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">ConfigData</span><span class="p">.</span><span class="n">MAP_SIZE</span><span class="p">)</span>   <span class="c1">//right neighbour</span>
+</span><span class='line'>                    <span class="n">map</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">n</span><span class="p">].</span><span class="n">neighbours</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">map</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">n</span> <span class="p">+</span> <span class="m">1</span><span class="p">]);</span>
+</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="n">k</span> <span class="p">+</span> <span class="m">1</span> <span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span> <span class="n">ConfigData</span><span class="p">.</span><span class="n">MAP_SIZE</span><span class="p">)</span>   <span class="c1">//down neighbour</span>
+</span><span class='line'>                    <span class="n">map</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">n</span><span class="p">].</span><span class="n">neighbours</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">map</span><span class="p">[</span><span class="n">k</span> <span class="p">+</span> <span class="m">1</span><span class="p">,</span> <span class="n">n</span><span class="p">]);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">public</span> <span class="n">Cell</span><span class="p">[,]</span> <span class="n">getMap</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">map</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c1">// GET A CELL BY ITS ID</span>
+</span><span class='line'>    <span class="k">public</span> <span class="n">Cell</span> <span class="nf">getCell</span><span class="p">(</span><span class="kt">int</span> <span class="n">cellid</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="kt">double</span> <span class="n">X</span> <span class="p">=</span> <span class="n">Convert</span><span class="p">.</span><span class="n">ToDouble</span><span class="p">(</span><span class="n">cellid</span> <span class="p">/</span> <span class="n">ConfigData</span><span class="p">.</span><span class="n">MAP_SIZE</span><span class="p">);</span>
+</span><span class='line'>        <span class="kt">double</span> <span class="n">Y</span> <span class="p">=</span> <span class="n">Convert</span><span class="p">.</span><span class="n">ToDouble</span><span class="p">(</span><span class="n">cellid</span> <span class="p">%</span> <span class="n">ConfigData</span><span class="p">.</span><span class="n">MAP_SIZE</span><span class="p">);</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">x</span> <span class="p">=</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">Math</span><span class="p">.</span><span class="n">Floor</span><span class="p">(</span><span class="n">X</span><span class="p">);</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">y</span> <span class="p">=</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">Math</span><span class="p">.</span><span class="n">Floor</span><span class="p">(</span><span class="n">Y</span><span class="p">);</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">map</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="c1">// GET A CELL BY ITS &amp;lt;X,Y&amp;gt; CO-ORDINATES</span>
+</span><span class='line'>    <span class="k">public</span> <span class="n">Cell</span> <span class="nf">getCell</span><span class="p">(</span><span class="kt">int</span> <span class="n">x</span><span class="p">,</span> <span class="kt">int</span> <span class="n">y</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">map</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">];</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>
+Then comes the interesting part. We used Breath First Search algorithm to find the nearest cell which contains a coin pile. In the constructor of the class &ldquo;BFS&rdquo; a world object is initialized. findNextMove() method returns the ID of the next cell where the tank client should move. This method requires the cell ID of the current tank&rsquo;s position. Then the Cell object corresponding to that position from the world  object is assigned to the &ldquo;start&rdquo; variable.</p>
+
+<p>The BFS algorithm works as follows. Until the queue which contains all the possible goal cells is empty, each cell in the queue is dequeued and scanned for it&rsquo;s neighboring cells. If those neighbors are obstacle cells(water,brick,stone) then those cells are marked as visited, but doesn&rsquo;t added to the queue. If a neighboring cell is not an obstacle and doesn&rsquo;t contain a coin pile either, then that cell is marked as visited, set its parent cell as the current cell and added to the queue. If a cell with a coin pile is found, then using the &ldquo;parent&rdquo; variable in each cell, a back tracking loop will return the ID of the next cell where the tank should move. If the queue is empty(i.e. no coin pile is found) then after while loop finishes, it will return -1, which is not a valid cell ID.</p>
+
+<p><div class='bogus-wrapper'><notextile><figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+</pre></td><td class='code'><pre><code class='c#'><span class='line'><span class="k">class</span> <span class="nc">BFS</span><span class="p">&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;{</span>
+</span><span class='line'>    <span class="k">private</span> <span class="n">World</span> <span class="n">world</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">private</span> <span class="kt">int</span> <span class="n">currentPos</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">private</span> <span class="kt">int</span> <span class="n">mapSize</span> <span class="p">=</span> <span class="n">ConfigData</span><span class="p">.</span><span class="n">MAP_SIZE</span> <span class="p">*</span> <span class="n">ConfigData</span><span class="p">.</span><span class="n">MAP_SIZE</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">private</span> <span class="n">Cell</span> <span class="n">start</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">private</span> <span class="kt">int</span> <span class="n">id</span> <span class="p">=-</span><span class="m">1</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">public</span> <span class="nf">BFS</span><span class="p">(</span><span class="n">World</span> <span class="n">w</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="p">.</span><span class="n">world</span> <span class="p">=</span> <span class="n">w</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">public</span> <span class="kt">int</span> <span class="nf">findNextMove</span><span class="p">(</span><span class="kt">int</span> <span class="n">currP</span><span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">this</span><span class="p">.</span><span class="n">currentPos</span> <span class="p">=</span> <span class="n">currP</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">this</span><span class="p">.</span><span class="n">start</span> <span class="p">=</span> <span class="n">world</span><span class="p">.</span><span class="n">getCell</span><span class="p">(</span><span class="n">currentPos</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">//if the tank is on a coin pile then that coin pile will vanish</span>
+</span><span class='line'>        <span class="n">start</span><span class="p">.</span><span class="n">is_coin</span> <span class="p">=</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="n">Queue</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">Cell</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">queue</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Queue</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">Cell</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;();</span>
+</span><span class='line'>        <span class="kt">bool</span><span class="p">[]</span> <span class="n">mark</span> <span class="p">=</span> <span class="k">new</span> <span class="kt">bool</span><span class="p">[</span><span class="n">mapSize</span><span class="p">];</span>        <span class="c1">// boolean array to store if a cell is visited</span>
+</span><span class='line'>        <span class="c1">//enque the current position cell</span>
+</span><span class='line'>        <span class="n">queue</span><span class="p">.</span><span class="n">Enqueue</span><span class="p">(</span><span class="n">start</span><span class="p">);</span>
+</span><span class='line'>        <span class="c1">// marks current position as visited</span>
+</span><span class='line'>        <span class="n">mark</span><span class="p">[</span><span class="n">start</span><span class="p">.</span><span class="n">id</span><span class="p">]</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="kt">bool</span> <span class="n">found</span> <span class="p">=</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">//untill a path is found</span>
+</span><span class='line'>        <span class="k">while</span> <span class="p">(</span><span class="n">queue</span><span class="p">.</span><span class="n">Count</span> <span class="p">!=</span> <span class="m">0</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">Cell</span> <span class="n">current</span> <span class="p">=</span> <span class="n">queue</span><span class="p">.</span><span class="n">Dequeue</span><span class="p">();</span>
+</span><span class='line'>            <span class="c1">//scans all the neighbour cells of the current cell</span>
+</span><span class='line'>            <span class="k">foreach</span> <span class="p">(</span><span class="n">Cell</span> <span class="n">neighbour</span> <span class="k">in</span> <span class="n">current</span><span class="p">.</span><span class="n">neighbours</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="c1">// if a coin pile or life pack is found BFS algorithm will break and return that cell id</span>
+</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="n">neighbour</span><span class="p">.</span><span class="n">is_coin</span><span class="p">||</span> <span class="n">neighbour</span><span class="p">.</span><span class="n">is_Life</span><span class="p">)</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                    <span class="n">found</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>                    <span class="n">Cell</span> <span class="n">curr</span> <span class="p">=</span> <span class="n">neighbour</span><span class="p">;</span>
+</span><span class='line'>                    <span class="c1">//backtracks the cell id of next cell where the tank should move</span>
+</span><span class='line'>                    <span class="k">while</span> <span class="p">(</span><span class="n">curr</span><span class="p">.</span><span class="n">parent</span> <span class="p">!=</span> <span class="n">start</span><span class="p">)</span>
+</span><span class='line'>                    <span class="p">{</span>
+</span><span class='line'>                        <span class="n">curr</span> <span class="p">=</span> <span class="n">curr</span><span class="p">.</span><span class="n">parent</span><span class="p">;</span>
+</span><span class='line'>                    <span class="p">}</span>
+</span><span class='line'>                    <span class="n">id</span> <span class="p">=</span> <span class="n">curr</span><span class="p">.</span><span class="n">id</span><span class="p">;</span>
+</span><span class='line'>                    <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="n">neighbour</span><span class="p">.</span><span class="n">is_brick</span> <span class="p">||</span> <span class="n">neighbour</span><span class="p">.</span><span class="n">is_stone</span> <span class="p">||</span> <span class="n">neighbour</span><span class="p">.</span><span class="n">is_water</span><span class="p">)</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                    <span class="n">mark</span><span class="p">[</span><span class="n">neighbour</span><span class="p">.</span><span class="n">id</span><span class="p">]</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>                <span class="c1">//if neighbour is not a blocked cell it will be added to the queue</span>
+</span><span class='line'>                <span class="k">if</span> <span class="p">(!</span><span class="n">mark</span><span class="p">[</span><span class="n">neighbour</span><span class="p">.</span><span class="n">id</span><span class="p">])</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                    <span class="n">mark</span><span class="p">[</span><span class="n">neighbour</span><span class="p">.</span><span class="n">id</span><span class="p">]</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+</span><span class='line'>                    <span class="n">neighbour</span><span class="p">.</span><span class="n">parent</span> <span class="p">=</span> <span class="n">current</span><span class="p">;</span>
+</span><span class='line'>                    <span class="n">queue</span><span class="p">.</span><span class="n">Enqueue</span><span class="p">(</span><span class="n">neighbour</span><span class="p">);</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="c1">// if a goal is found &quot;while&quot; loop will break </span>
+</span><span class='line'>            <span class="k">if</span> <span class="p">(</span><span class="n">found</span><span class="p">)</span>
+</span><span class='line'>                <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">id</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span>
+</span></code></pre></td></tr></table></div></figure></notextile></div>        <br/>
+This algorithm is best suited when the search space(size of the &ldquo;World&rdquo; 2D array) is small (typically less than 2500 cells). BFS is guaranteed to  find the closest goal (if a goal exists). If there is no goal, BFS will go through the entire search space, thus the size of the queue will increase by 3 cells on each iteration (assuming there are no obstacles). This pitfall can be avoided by using AStar algorithm. But for a small search space BFS is more than enough. The full project can be downloaded from the <a href="https://bitbucket.org/elitecoders/tankgame">Bitbucket repository</a>.</p>
+]]></content>
+  </entry>
+  
+</feed>

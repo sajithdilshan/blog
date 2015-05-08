@@ -1,0 +1,23 @@
+<div class="highlight"><pre><span class="nt">%div</span><span class="nc">.panel-group</span><span class="p">{</span><span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="nb">id</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;</span> <span class="o">=&gt;</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">accordion</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;}</span>
+  &amp;ndash; if @feeditem_list.nil?&lt;/p&gt;
+
+&lt;pre&gt;&lt;code&gt;%p no item here
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;ul&gt;
+&lt;li&gt;else
+
+&lt;ul&gt;
+&lt;li&gt;@feeditem_list.each_with_index do |feeditem, index|
+
+&lt;ul&gt;
+&lt;li&gt;$item_id = feeditem.id
+<span class="nt">%div</span><span class="nc">.panel</span><span class="p">{</span><span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="nb">id</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;</span> <span class="o">=&gt;</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">panel</span><span class="c1">#{$item_id}</span>&amp;rdquo;}
+<span class="nt">%div</span><span class="nc">.panel-heading</span>
+  <span class="nt">%h4</span><span class="nc">.panel-title</span>
+    <span class="nt">%a</span><span class="nc">.accordion-toggle</span><span class="p">{</span><span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">data</span><span class="o">-</span><span class="n">toggle</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;</span> <span class="o">=&gt;</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">collapse</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;,</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">data</span><span class="o">-</span><span class="n">parent</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;</span> <span class="o">=&gt;</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="c1">#accordion&amp;rdquo;, &amp;ldquo;href&amp;rdquo; =&gt; &amp;ldquo;#feed#{$item_id}</span>&amp;rdquo;}
+      <span class="p">=</span> <span class="n">feeditem</span><span class="o">.</span><span class="n">post_title</span>
+<span class="nt">%div</span><span class="nc">.panel-collapse.collapse</span><span class="p">{</span><span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="nb">id</span><span class="o">&amp;</span><span class="n">rdquo</span><span class="p">;</span> <span class="o">=&gt;</span> <span class="o">&amp;</span><span class="n">ldquo</span><span class="p">;</span><span class="n">feed</span><span class="c1">#{$item_id}</span>&amp;rdquo;}
+  <span class="nt">%div</span><span class="nc">.panel-body</span>
+      <span class="nt">%p</span><span class="p">=</span> <span class="n">feeditem</span><span class="o">.</span><span class="n">post_body</span><span class="o">.</span><span class="n">html_safe</span>
+</pre></div>

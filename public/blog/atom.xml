@@ -1,0 +1,734 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[_here be dragons_]]></title>
+  <link href="http://sajithdilshan.github.io/blog/atom.xml" rel="self"/>
+  <link href="http://sajithdilshan.github.io/blog/"/>
+  <updated>2015-05-08T09:53:05+05:30</updated>
+  <id>http://sajithdilshan.github.io/blog/</id>
+  <author>
+    <name><![CDATA[Sajith Dilshan]]></name>
+    
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Transform Freya Into Yosemite]]></title>
+    <link href="http://sajithdilshan.github.io/blog/blog/2014/07/12/transform-freya-into-yosemite/"/>
+    <updated>2014-07-12T14:33:24+05:30</updated>
+    <id>http://sajithdilshan.github.io/blog/blog/2014/07/12/transform-freya-into-yosemite</id>
+    <content type="html"><![CDATA[<blockquote><p>DISCLAMER : This transformation might render your system unstable, proceed at your own risk.</p></blockquote>
+
+
+<p>This post is about transforming Elementary OS Freya into OS X Yosemite (only the appearance ;&ndash;) ). If you&rsquo;re on eOS Freya, type the below command into the terminal</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo add-apt-repository ppa:gnome3-team/gnome3 && sudo add-apt-repository ppa:gnome3-team/gnome3-staging && sudo add-apt-repository ppa:ricotz/testing && sudo add-apt-repository ppa:elementary-os/daily && sudo apt-get update && sudo apt-get dist-upgrade -y</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Above command will add the latest gnome and elmentary daily PPAs to your system and perform a distribution upgrade. After that type below command in-order to install nautilus and epiphany.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo apt-get install epiphany-browser nautilus</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now you can download the XGtk theme from this <a href="http://kxmylo.deviantart.com/art/Xgtk-theme-465195148">link</a> and place the theme folder within /usr/share/theme and apply xGtk using elementary-tweak. Now reboot your pc and if everything goes well, your desktop will look as below.</p>
+
+<p><img src="https://lh5.googleusercontent.com/-CU3VR-Vsimw/U8DcA_wTsdI/AAAAAAAABgM/UR5Rke_Ym5k/w1010-h568-no/screnn.png"></p>
+
+<p>A huge thank goes to <a href="https://plus.google.com/u/0/104908072417273204416/about">Camilo Higuita</a> for creating this wonderful theme and for providing the instructions.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[The Woes of WebSockets]]></title>
+    <link href="http://sajithdilshan.github.io/blog/blog/2014/03/26/the-woes-of-websockets/"/>
+    <updated>2014-03-26T12:49:00+05:30</updated>
+    <id>http://sajithdilshan.github.io/blog/blog/2014/03/26/the-woes-of-websockets</id>
+    <content type="html"><![CDATA[<p>Lately I&rsquo;ve been developing a server side implementation of <a href="https://tools.ietf.org/html/rfc6455">Web Socket Protocol</a> and I must say even though the core concept of Web Socket protocol is awesome, its framing specification has got it all wrong. Let&rsquo;s start with the definition of a Web Socket frame.</p>
+
+<pre><code> 0                   1                   2                   3
+  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ +-+-+-+-+-------+-+-------------+-------------------------------+
+ |F|R|R|R| opcode|M| Payload len |    Extended payload length    |
+ |I|S|S|S|  (4)  |A|     (7)     |             (16/64)           |
+ |N|V|V|V|       |S|             |   (if payload len==126/127)   |
+ | |1|2|3|       |K|             |                               |
+ +-+-+-+-+-------+-+-------------+ - - - - - - - - - - - - - - - +
+ |     Extended payload length continued, if payload len == 127  |
+ + - - - - - - - - - - - - - - - +-------------------------------+
+ |                               |Masking-key, if MASK set to 1  |
+ +-------------------------------+-------------------------------+
+ | Masking-key (continued)       |          Payload Data         |
+ +-------------------------------- - - - - - - - - - - - - - - - +
+ :                     Payload Data continued ...                :
+ + - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - +
+ |                     Payload Data continued ...                |
+ +---------------------------------------------------------------+
+</code></pre>
+
+<p>As you can see above, it is a total mess. My biggest complain is about the masking of frame&rsquo;s payload when they are sent from a client to a server. The purpose of this masking is to prevent <a href="https://tools.ietf.org/html/rfc6455#page-51">cache poisoning in proxies</a>. But what does cache poisoning got to do with the Web Socket protocol? It is a vulnerability found on really old out-of-date proxies and why does Web Socket protocol has to pay the price for that?</p>
+
+<p>The real problem occurs when unmasking the frame&rsquo;s payload. You have to XOR the masked payload with the mask key and need I remind you that XORing is CPU intensive when you have to unmask thousands of frames per minute. Why don&rsquo;t we just let those old proxies suffer the cache poisoning (proxy users could either upgrade to a new version or the proxy vendor could release a patch for this particular vulnerability) and rid the Web Sockets from this misery of masking.</p>
+
+<p>The next problem is the payload length. 64 bits can be to specify the number of bytes in the payload. That means 2<sup>64</sup> = <a href="http://www.wolframalpha.com/input/?i=2%5E64">18 quintillion</a>, which is more bytes than the <a href="http://www.wolframalpha.com/input/?i=number+of+stars+in+the+Milky+Way+galaxy">number of stars in the Milky Way galaxy</a>. Is it really practical to use such a large payload? Apart from that, there is another feature of continuous frames to handle such scenario.</p>
+
+<p>Let&rsquo;s use a fixed size of 4 bytes(size of an integer) to specify the payload length. If the payload is larger than that, one could use the continuous framing mechanism. Having a fixed number of bytes to represent the payload length is always better than a dynamic size.</p>
+
+<p>After applying above improvements, I present you a more practical definition of a Web Socket frame as below. What do you think about it?</p>
+
+<pre><code> 0                   1                   2                   3
+  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+ +-+-+-+-+-------+-+-------------+-------------------------------+
+ |F|R|R|R| opcode|         Payload length (Fixed Size)           |
+ |I|S|S|S|  (4)  |                  (32)                         |
+ |N|V|V|V|       |                                               |
+ | |1|2|3|       |                                               |
+ +-+-+-+-+-------+-+-------------+ - - - - - - - - - - - - - - - +
+ |Payload length |          Payload Data                         |
+ +-------------------------------- - - - - - - - - - - - - - - - +
+ :                     Payload Data continued ...                :
+ + - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - +
+ |                     Payload Data continued ...                |
+ +---------------------------------------------------------------+
+</code></pre>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[IntelliJ IDEA Plugin for UltraESB]]></title>
+    <link href="http://sajithdilshan.github.io/blog/blog/2014/02/14/intellij-idea-plugin-for-ultraesb/"/>
+    <updated>2014-02-14T19:04:00+05:30</updated>
+    <id>http://sajithdilshan.github.io/blog/blog/2014/02/14/intellij-idea-plugin-for-ultraesb</id>
+    <content type="html"><![CDATA[<p>Recently I&rsquo;ve developed an IntelliJ IDEA plugin for <a href="http://www.adroitlogic.org/products/ultraesb.html">UltraESB</a> with few features and while doing that I&rsquo;ve learned so much about the plugin development for IDEA. And also if you&rsquo;re an ultraesb developer, by installing this plugin you&rsquo;ll be able to enjoy below mentioned features.</p>
+
+<h3>Creating multi module projects and deployment units</h3>
+
+<p><img src="http://docs.adroitlogic.org/download/attachments/11174355/unita-2.png" title="'New Deployment Unit Wizard'" ></p>
+
+<p>You can create new Multi-Module projects and new Deployment UNits straight from the new project/module wizard respectively. All you have to do is fill out the necessary fields and IDEA will do the rest for you.</p>
+
+<h3>File templates, Live templates, Language injection and Code generation</h3>
+
+<p><img src="http://docs.adroitlogic.org/download/attachments/11174358/inject.png" title="'Java language injection'" ></p>
+
+<p>This plugin contains new sequence file template, few live templates, Java language injection for XML tags and code generation facility. You can simply read the <a href="http://docs.adroitlogic.org/display/esb/IntelliJ+IDEA+Plugin">full documentationn</a> of the plugin to know more.</p>
+
+<p>I&rsquo;m planning to write a series of tutorials explaining how I implemented each and every feature. The plugin is open source and the source code is available here. You can download the plugin straight from Jetbrain&rsquo;s <a href="http://plugins.jetbrains.com/plugin/7396">plugin repositoryy</a></p>
+
+<p>In the future we&rsquo;re planing to integrate <a href="http://confluence.jetbrains.com/display/IDEADEV/Spring+API+Guide">Spring Open API</a> into the plugin so that we can provide navigation and refactoring facilities for the proxy, endpoint and sequence beans.</p>
+
+<p>And last but not least I&rsquo;d like to thank IntelliJ IDEA <a href="http://devnet.jetbrains.com/community/idea/open_api_and_plugin_development">Open API and Plugin Development communityy</a> especially <a href="http://devnet.jetbrains.com/people/AlexanderD">Alexander Doroshko</a> and <a href="http://devnet.jetbrains.com/people/yannc76">Yann Cebron</a> for providing immense support.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Mate Panel With Luna]]></title>
+    <link href="http://sajithdilshan.github.io/blog/blog/2013/09/29/mate-panel-with-luna/"/>
+    <updated>2013-09-29T04:47:00+05:30</updated>
+    <id>http://sajithdilshan.github.io/blog/blog/2013/09/29/mate-panel-with-luna</id>
+    <content type="html"><![CDATA[<p>So this tutorial is about how to install mate-panel in Elementary OS Luna. Let&rsquo;s just get started right away.</p>
+
+<p>First we need to add the mate repository to our system. Keep in mind this is only for precise (Ubuntu 12.04) systems. Open a terminal and run below command.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo add-apt-repository "deb http://packages.mate-desktop.org/repo/ubuntu/ precise main" && sudo apt-get update</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now we need to install mate panel and its dependencies. And also the required indicator-applets.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo apt-get install mate-panel mate-core gtk2-engines-pixbuf mate-indicator-applet appmenu-gtk appmenu-gtk3 indicator-appmenu-gtk2 indicator-sound-gtk2 indicator-application-gtk2 indicator-datetime-gtk2 indicator-session-gtk2</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now we are all set. We just have to replace wingpanel with mate panel. Inorder to do that open dconf-editor and navigate to org &ndash;> pantheon &ndash;> cerbere and in the &ldquo;monitored-processes&rdquo; section replace wingpanel with mate-panel like in the below image. After that logout and login again.</p>
+
+<p><img src="https://dl.dropboxusercontent.com/u/30358512/blog/1.png"></p>
+
+<!-- more -->
+
+
+<p>After logging back you can see the mate-panel instead of wingpanel. Now we have to customize it a bit to make it look better. If you are familiar with gnome-panel, then customizing mate-panel is just as same as customizing gnome-panel.</p>
+
+<p>You can change the background of the panel by right clicking it and selecting properties. Then change the size to 22 px and go to the background tab and give <a href="https://dl.dropboxusercontent.com/u/30358512/blog/panel-bg.png">this</a> image as the background image.</p>
+
+<p>Then in-order to add indicators, right click on the panel and select &ldquo;Add to Panle&rdquo;. After that add &ldquo;Indicator Applet Appmenu&rdquo; and &ldquo;Indicator Applet Complete&rdquo; to your panel. You can create a &ldquo;Custom Application Launcher&rdquo; for slingshot if you like. And for best eye-candy, use <a href="https://dl.dropboxusercontent.com/u/30358512/elementary-cupertino.tar.gz">elementary-cupertino</a> theme. Well that&rsquo;s it. Now your desktop should look similar to the below image.</p>
+
+<p><img src="https://dl.dropboxusercontent.com/u/30358512/blog/2.png"></p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[AJAX With Ruby on Rails]]></title>
+    <link href="http://sajithdilshan.github.io/blog/blog/2013/08/21/ajax-with-ruby-on-rails/"/>
+    <updated>2013-08-21T17:28:00+05:30</updated>
+    <id>http://sajithdilshan.github.io/blog/blog/2013/08/21/ajax-with-ruby-on-rails</id>
+    <content type="html"><![CDATA[<p>As for the Software Engineering Project module in this semester I&rsquo;m building a feed reader(similar to Google reader) using ruby on rails. And for this project I&rsquo;ve been using AJAX heavily and Below is a simple tutorial to use AJAX with RoR.</p>
+
+<p>So here&rsquo;s the scenario. A list of feed subscriptions is displayed and when a user clicks on a item in that list, AJAX request is sent to the server to fetch the feed items(posts) of that feed and it is displayed inside the DIV tag with the id &ldquo;feedlistcontainer&rdquo;. Let&rsquo;s assume the corresponding modelname is userfeed.rb and the controller is userfeeds_controller.rb</p>
+
+<figure class='code'><figcaption><span>app/views/userfeeds/index.html.haml </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='haml'><span class='line'><span class="nt">%div</span><span class="nc">.row</span>
+</span><span class='line'>  <span class="nt">%div</span><span class="nc">.col-md-9.col-md-push-3</span>
+</span><span class='line'>    <span class="nt">%div</span><span class="p">{</span><span class="s2">&quot;id&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;feedlistcontainer&quot;</span><span class="p">}</span>
+</span><span class='line'>       <span class="p">=</span> <span class="n">render</span> <span class="ss">partial</span><span class="p">:</span> <span class="s2">&quot;_feedlist&quot;</span>
+</span><span class='line'>  <span class="nt">%div</span><span class="nc">.col-md-3.col-md-pull-9</span>
+</span><span class='line'>    <span class="nt">%div</span><span class="nc">.row</span>
+</span><span class='line'>      <span class="nt">%p</span> Your Subscriptions
+</span><span class='line'>      <span class="nt">%div</span><span class="nc">.list-group</span>
+</span><span class='line'>      <span class="p">-</span> <span class="k">if</span> <span class="vi">@feeditems</span><span class="o">.</span><span class="n">nil?</span>
+</span><span class='line'>        <span class="nt">%p</span> No subscriptions available
+</span><span class='line'>      <span class="p">-</span> <span class="k">else</span>
+</span><span class='line'>        <span class="p">-</span> <span class="vi">@feeditems</span><span class="o">.</span><span class="n">each_with_index</span> <span class="k">do</span> <span class="o">|</span><span class="n">feeditem</span><span class="p">,</span><span class="n">index</span><span class="o">|</span>
+</span><span class='line'>          <span class="c">/ %span.badge 14</span>
+</span><span class='line'>          <span class="p">=</span> <span class="n">link_to</span> <span class="n">feeditem</span><span class="o">.</span><span class="n">feed_name</span><span class="p">,</span> <span class="n">show_feed_list_path</span><span class="p">(</span><span class="ss">:feed_id</span> <span class="o">=&gt;</span> <span class="n">feeditem</span><span class="o">.</span><span class="n">id</span><span class="p">),</span> <span class="ss">:class</span> <span class="o">=&gt;</span><span class="s2">&quot;list-group-item&quot;</span><span class="p">,</span> <span class="ss">remote</span><span class="p">:</span> <span class="kp">true</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><figcaption><span>app/views/userfeeds/_feedlist.html.haml </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='haml'><span class='line'><span class="nt">%div</span><span class="nc">.panel-group</span><span class="p">{</span><span class="s2">&quot;id&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;accordion&quot;</span><span class="p">}</span>
+</span><span class='line'>  <span class="p">-</span> <span class="k">if</span> <span class="vi">@feeditem_list</span><span class="o">.</span><span class="n">nil?</span>
+</span><span class='line'>    <span class="nt">%p</span> no item here
+</span><span class='line'>  <span class="p">-</span> <span class="k">else</span>
+</span><span class='line'>    <span class="p">-</span> <span class="vi">@feeditem_list</span><span class="o">.</span><span class="n">each_with_index</span> <span class="k">do</span> <span class="o">|</span><span class="n">feeditem</span><span class="p">,</span> <span class="n">index</span><span class="o">|</span>
+</span><span class='line'>      <span class="p">-</span> <span class="vg">$item_id</span> <span class="o">=</span> <span class="n">feeditem</span><span class="o">.</span><span class="n">id</span>
+</span><span class='line'>      <span class="nt">%div</span><span class="nc">.panel</span><span class="p">{</span><span class="s2">&quot;id&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;panel</span><span class="si">#{</span><span class="vg">$item_id</span><span class="si">}</span>&quot;}
+</span><span class='line'>        <span class="nt">%div</span><span class="nc">.panel-heading</span>
+</span><span class='line'>          <span class="nt">%h4</span><span class="nc">.panel-title</span>
+</span><span class='line'>            <span class="nt">%a</span><span class="nc">.accordion-toggle</span><span class="p">{</span><span class="s2">&quot;data-toggle&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;collapse&quot;</span><span class="p">,</span> <span class="s2">&quot;data-parent&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;#accordion&quot;</span><span class="p">,</span> <span class="s2">&quot;href&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;#feed</span><span class="si">#{</span><span class="vg">$item_id</span><span class="si">}</span>&quot;}
+</span><span class='line'>              <span class="p">=</span> <span class="n">feeditem</span><span class="o">.</span><span class="n">post_title</span>
+</span><span class='line'>        <span class="nt">%div</span><span class="nc">.panel-collapse.collapse</span><span class="p">{</span><span class="s2">&quot;id&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;feed</span><span class="si">#{</span><span class="vg">$item_id</span><span class="si">}</span>&quot;}
+</span><span class='line'>          <span class="nt">%div</span><span class="nc">.panel-body</span>
+</span><span class='line'>              <span class="nt">%p</span><span class="p">=</span> <span class="n">feeditem</span><span class="o">.</span><span class="n">post_body</span><span class="o">.</span><span class="n">html_safe</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Keep in mind that I&rsquo;ve used bootstrap 3 with the project, hence different class names for DIV tags. So above index.html.haml renders feed list inside &ldquo;div.col-md-3.col-md-pull-9&rdquo; tag. The userfeeds_controller initializes the @feeditems variable with an iteratable object of &ldquo;feeds&rdquo; which was returned to it by a model. Then it iterates over that object and for each entry it creates a link with remote link. Notify the &ldquo;remote: true&rdquo; syntax. That is the syntax which specifies that this is not a regular link, but it is an AJAX call. By clicking on that link, it will generate a GET remote rquest to show_feed_list_path and it will populate param hash with &ldquo;:feed_id => feeditem.id&rdquo; value. We have to add below code in the routes.rb file defining the show_feed_list_path</p>
+
+<figure class='code'><figcaption><span>routes.rb </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="n">get</span> <span class="s2">&quot;show_feed_list&quot;</span><span class="p">,</span> <span class="ss">to</span><span class="p">:</span> <span class="s2">&quot;userfeeds#show_feed_list&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And also feed items are rendered inside &ldquo;div{&#8220;id&rdquo; => &ldquo;feedlistcontainer&rdquo;}&ldquo; tag. I&rsquo;ve used an accordion to diplay the post list(feed items). The @feeditem_list will be initialized by the userfeeds_controller after the AJAX call.</p>
+
+<p>Below is the userfeed_controller code corresponding to the above view template</p>
+
+<figure class='code'><figcaption><span>app/controllers/userfeeds_controller.rb </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'>  <span class="k">def</span> <span class="nf">index</span>
+</span><span class='line'>    <span class="vi">@feeditems</span> <span class="o">=</span> <span class="no">Userfeed</span><span class="o">.</span><span class="n">getUserFeedList</span><span class="p">(</span><span class="n">currentuser</span><span class="o">.</span><span class="n">userid</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">show_feed_list</span>
+</span><span class='line'>    <span class="n">feed_id</span> <span class="o">=</span> <span class="n">params</span><span class="o">[</span><span class="ss">:feed_id</span><span class="o">]</span>
+</span><span class='line'>    <span class="vi">@feeditem_list</span> <span class="o">=</span> <span class="no">Userfeed</span><span class="o">.</span><span class="n">get_feed_list</span><span class="p">(</span><span class="n">feed_id</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">respond_to</span> <span class="k">do</span> <span class="o">|</span><span class="nb">format</span><span class="o">|</span>
+</span><span class='line'>      <span class="nb">format</span><span class="o">.</span><span class="n">js</span>   <span class="c1"># show_feed_list.js.haml</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>What this code does is in the index method it initialized the @feeditems variable with an iteratable object which contains a list of feed subscriptions of a particular user.&ldquo;Userfeed.getUserFeedList(currentuser.userid)&rdquo; method call can be different depending on how the Models are defined in the application. But the general ide is that @feeditems variable is initialized with a feed list somehow.</p>
+
+<p>The After the ajax call show_feed_list method gets called. We extract the ID of the feed from param hash and using that we initialize @feeditem_list variable with an iteratable object of posts(feed items) in that particular feed. Again &ldquo;Userfeed.get_feed_list(feed_id)&rdquo; can be different. All we have to do is somehow initialize the @feeditem_list with corresponding post list.</p>
+
+<p>Then it will pass this @feeditem_list to a file name &ldquo;show_feed_list.js.haml&rdquo;. Remember RoR uses convention over configuration. So that&rsquo;s why it is passing the @feeditem_list to a javascript file with the same name of the method &ldquo;show_feed_list&rdquo;.</p>
+
+<figure class='code'><figcaption><span>app/views/userfeeds/show_feed_list.js.haml </span></figcaption>
+<div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='haml'><span class='line'>$(&#39;#feedlistcontainer&#39;).html(&quot;<span class="si">#{</span><span class="n">j</span><span class="p">(</span><span class="n">render</span><span class="p">(</span><span class="s2">&quot;feedlist&quot;</span><span class="p">,</span> <span class="ss">:feeditem_list</span> <span class="o">=&gt;</span> <span class="vi">@feeditem_list</span><span class="p">))</span><span class="si">}</span>&quot;)
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Above is the content of the java script file. It will render the <em>feedlist.html.haml inside the DIV tag with id &ldquo;feedlistcontainer&rdquo; and pass the @feeditem_list variable from controller to the </em>feedlist.html.haml template. And that&rsquo;s it. We don&rsquo;t need extensive knowledge on java script or JQuery at all.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Facing an Interview]]></title>
+    <link href="http://sajithdilshan.github.io/blog/blog/2013/08/11/facing-an-interview/"/>
+    <updated>2013-08-11T15:30:00+05:30</updated>
+    <id>http://sajithdilshan.github.io/blog/blog/2013/08/11/facing-an-interview</id>
+    <content type="html"><![CDATA[<p>Last week I got the chance to face an interview for the position of a Softwre Engineer, (Intern)  and I thought I would share the details. Hope this would be helpful for anyone who is looking for some tips before going to an interview.</p>
+
+<p>So let&rsquo;s start with the CV. When you&rsquo;re preparing the CV don&rsquo;t include each and every achievement, experience and project you did. CV is mainly a marketing document. Do some research on the company you&rsquo;re applying, and customize your CV so that it only includes relevant data about yourself, which might come in handy if you get to work in that particular company. (E.g. If a company is heavily using a particular framework, emphasis your experience and the projects you did using that framework.)</p>
+
+<p>If you&rsquo;re adding a project that you did on the CV, you&rsquo;re expected to answer any question regarding that project. So if you decide to include a group project, you should know all the aspects of it. When the interviewer asks a question about the client-server communication aspect of a particular project, you shouldn&rsquo;t say that &ldquo;I only did the database part and I have no idea about the communication part&rdquo;. It would only display your ignorance and negligence.</p>
+
+<p>And keep in mind to add your interest in the CV too. Don&rsquo;t add a particular topic just because it is the current trend. Instead add topics which are relevant and you&rsquo;re passionate about.</p>
+
+<p>Before going to the interview, polish your knowledge on certain topics like OOP principles, databases, design patterns, algorithms and languages like Java. You can Google and find out what kind of questions are asked frequently in interviews from above topics. And also don&rsquo;t forget to research and get the gist of the technologies which are mostly used by that particular company you&rsquo;re applying.</p>
+
+<p>When going for the interview, wear something simple, but professional. And get to the place at least 15 minutes early. Always be polite, smile, pay your full attention to the interviewer and do not lie under any circumstance. If you don&rsquo;t know the answer to a question, be humble enough to say that you don&rsquo;t know. When answering the questions don&rsquo;t rush, take your time and explain yourself clearly. If you don&rsquo;t understand the question, politely ask to explain it a bit more instead of answering without comprehending the question. Keep in mind that having good communication skills can play a key role in an interview. You might be a really intelligent person, but poor communication skills might let you down. So if you think that there is room for improvements, better get started working on that right away.</p>
+
+<p>Last but not least, and interview is a chance to market yourself and to convince the other party that you&rsquo;re the one they&rsquo;re looking for and you&rsquo;d be  a valuable asset for the company. And if you failed to do that analyze what you did wrong, learn your lessons and be more prepared for the next opportunity.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Path Finding With BFS]]></title>
+    <link href="http://sajithdilshan.github.io/blog/blog/2013/08/04/path-finding-with-bfs/"/>
+    <updated>2013-08-04T19:21:00+05:30</updated>
+    <id>http://sajithdilshan.github.io/blog/blog/2013/08/04/path-finding-with-bfs</id>
+    <content type="html"><![CDATA[<p>So as a part of the programming challenge module I did last semester, we were supposed to build a game which is similar to the Nintendo Tank war game. This was a group project and <a href="https://twitter.com/TharinduRusira">Tharindu</a> and I designed and build the game. What we had to do was to build a client who can communicate with a server. All together five clients can connect with the server simultaneously and the server sends global updates about the position of each clients, positions of coin piles, etc on each second. the clients has to process this global update and send its next move to the server before the next global update is arrived from the server. More details about the server specification is available <a href="https://docs.google.com/file/d/0B0SvcTAspdLrNHdJalc5elpiM28/edit">here</a>.</p>
+
+<p>So the main objective of the game is to collect as many coin piles as possible. The game is played on a 2D cell matrix as you can see on the below image. So what we had to do first was to create a suitable data structure which can be used by the path finding algorithm efficiently.</p>
+
+<p><img src="https://dl.dropboxusercontent.com/u/30358512/Untitled.jpg" title="Tanks War GUI" ></p>
+
+<!-- more -->
+
+
+<p>So for each cell we created a class called &ldquo;Cell&rdquo;. It has two constructors. A cell can be initialized either by giving its ID or it&rsquo;s x,y coordinates. It has a list of adjacent neighbor cells(up,down,left,right). A &ldquo;parent&rdquo; variable, which is used in path finding algorithm and boolean variables to set if the cell is an obstacle or a coin pile. The Constant &ldquo;ConfigData.Map_size&rdquo; is either the number of columns or number of rows in the square matrix.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class='c#'><span class='line'><span class="k">class</span> <span class="nc">Cell</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="c1">// implements a cell in the terrain</span>
+</span><span class='line'>        <span class="k">public</span> <span class="kt">int</span> <span class="n">positionX</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>        <span class="k">public</span> <span class="kt">int</span> <span class="n">positionY</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>        <span class="k">public</span> <span class="kt">int</span> <span class="n">id</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>                 <span class="c1">//id of the Cell</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// INTITIALIZE CELL BY THE ID</span>
+</span><span class='line'>        <span class="k">public</span> <span class="nf">Cell</span><span class="p">(</span><span class="kt">int</span> <span class="n">cellid</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">this</span><span class="p">.</span><span class="n">id</span> <span class="p">=</span> <span class="n">cellid</span><span class="p">;</span>
+</span><span class='line'>            <span class="c1">//calculate positionX and positionY based on id and MAP_SIZE</span>
+</span><span class='line'>            <span class="kt">double</span> <span class="n">X</span> <span class="p">=</span> <span class="n">Convert</span><span class="p">.</span><span class="n">ToDouble</span><span class="p">(</span><span class="n">id</span> <span class="p">/</span> <span class="n">ConfigData</span><span class="p">.</span><span class="n">MAP_SIZE</span><span class="p">);</span>
+</span><span class='line'>            <span class="kt">double</span> <span class="n">Y</span> <span class="p">=</span> <span class="n">Convert</span><span class="p">.</span><span class="n">ToDouble</span><span class="p">(</span><span class="n">id</span> <span class="p">%</span> <span class="n">ConfigData</span><span class="p">.</span><span class="n">MAP_SIZE</span><span class="p">);</span>
+</span><span class='line'>            <span class="k">this</span><span class="p">.</span><span class="n">positionX</span> <span class="p">=</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">Math</span><span class="p">.</span><span class="n">Floor</span><span class="p">(</span><span class="n">X</span><span class="p">);</span>
+</span><span class='line'>            <span class="k">this</span><span class="p">.</span><span class="n">positionY</span> <span class="p">=</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">Math</span><span class="p">.</span><span class="n">Floor</span><span class="p">(</span><span class="n">Y</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">//  INITIALIZE A CELL BY &lt;X,Y&gt; CO-ORDINTES</span>
+</span><span class='line'>        <span class="k">public</span> <span class="nf">Cell</span><span class="p">(</span><span class="kt">int</span> <span class="n">x</span><span class="p">,</span> <span class="kt">int</span> <span class="n">y</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">this</span><span class="p">.</span><span class="n">positionX</span> <span class="p">=</span> <span class="n">x</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">this</span><span class="p">.</span><span class="n">positionY</span> <span class="p">=</span> <span class="n">y</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">this</span><span class="p">.</span><span class="n">id</span> <span class="p">=</span> <span class="n">x</span> <span class="p">*</span> <span class="n">ConfigData</span><span class="p">.</span><span class="n">MAP_SIZE</span> <span class="p">+</span> <span class="n">y</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">public</span> <span class="n">Cell</span> <span class="n">parent</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>                   <span class="c1">//parent cell</span>
+</span><span class='line'>        <span class="k">public</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Cell</span><span class="p">&gt;</span> <span class="n">neighbours</span> <span class="p">=</span> <span class="k">new</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Cell</span><span class="p">&gt;();</span>    <span class="c1">//Cell list of neighbours</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">public</span> <span class="kt">bool</span> <span class="n">is_water</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span><span class="c1">// true if water</span>
+</span><span class='line'>        <span class="k">public</span> <span class="kt">bool</span> <span class="n">is_stone</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>       <span class="c1">//true if stone</span>
+</span><span class='line'>        <span class="k">public</span> <span class="kt">bool</span> <span class="n">is_brick</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>     <span class="c1">//true if brick</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">public</span> <span class="kt">bool</span> <span class="n">is_coin</span> <span class="p">{</span> <span class="k">get</span><span class="p">;</span> <span class="k">set</span><span class="p">;</span> <span class="p">}</span>      <span class="c1">//true if coin pile is in the cell</span>
+</span><span class='line'>
+</span><span class='line'> <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And then we have a &ldquo;World&rdquo; class which is composed of &ldquo;Cell&rdquo; objects. In the constructor of the &ldquo;World&rdquo; class a 2D array of &ldquo;Cell&rdquo; objects is initialized and for each cell in the 2D array, the neighboring cell is added to the neighbor&rsquo;s list. We can get any cell in the 2D array either by its x,y coordinates or the cell ID.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+</pre></td><td class='code'><pre><code class='c#'><span class='line'> <span class="k">class</span> <span class="nc">World</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// GAME WILL BE PLAYED IN THIS MATRIX</span>
+</span><span class='line'>        <span class="k">private</span> <span class="n">Cell</span><span class="p">[,]</span> <span class="n">map</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Cell</span><span class="p">[</span><span class="n">ConfigData</span><span class="p">.</span><span class="n">MAP_SIZE</span><span class="p">,</span> <span class="n">ConfigData</span><span class="p">.</span><span class="n">MAP_SIZE</span><span class="p">];</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="cm">/*</span>
+</span><span class='line'><span class="cm">         * 0 20 40 . . . 380</span>
+</span><span class='line'><span class="cm">         * 1 21 41 . . . .</span>
+</span><span class='line'><span class="cm">         * 2 22 42 .   . .</span>
+</span><span class='line'><span class="cm">         * 3 23 43 .   . .</span>
+</span><span class='line'><span class="cm">         * 4 24 44     . .</span>
+</span><span class='line'><span class="cm">         * . . .       . .</span>
+</span><span class='line'><span class="cm">         * . . .       . 398</span>
+</span><span class='line'><span class="cm">         * . . .   . . . 399</span>
+</span><span class='line'><span class="cm">         */</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">public</span> <span class="nf">World</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>            <span class="c1">//INITIALIZE CELLS IN THE MAP</span>
+</span><span class='line'>            <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">i</span> <span class="p">&lt;</span> <span class="n">ConfigData</span><span class="p">.</span><span class="n">MAP_SIZE</span><span class="p">;</span> <span class="n">i</span><span class="p">++)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">j</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">j</span> <span class="p">&lt;</span> <span class="n">ConfigData</span><span class="p">.</span><span class="n">MAP_SIZE</span><span class="p">;</span> <span class="n">j</span><span class="p">++)</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                    <span class="n">map</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Cell</span><span class="p">(</span><span class="n">i</span><span class="p">*</span><span class="n">ConfigData</span><span class="p">.</span><span class="n">MAP_SIZE</span><span class="p">+</span><span class="n">j</span><span class="p">);</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">//adds the neighbor cells</span>
+</span><span class='line'>            <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">k</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">k</span> <span class="p">&lt;</span> <span class="n">ConfigData</span><span class="p">.</span><span class="n">MAP_SIZE</span><span class="p">;</span> <span class="n">k</span><span class="p">++)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">n</span> <span class="p">=</span> <span class="m">0</span><span class="p">;</span> <span class="n">n</span> <span class="p">&lt;</span> <span class="n">ConfigData</span><span class="p">.</span><span class="n">MAP_SIZE</span><span class="p">;</span> <span class="n">n</span><span class="p">++)</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                    <span class="k">if</span> <span class="p">(</span><span class="n">n</span> <span class="p">-</span> <span class="m">1</span> <span class="p">&gt;</span> <span class="m">0</span><span class="p">)</span>     <span class="c1">//left neighbour</span>
+</span><span class='line'>                        <span class="n">map</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">n</span><span class="p">].</span><span class="n">neighbours</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">map</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">n</span> <span class="p">-</span> <span class="m">1</span><span class="p">]);</span>
+</span><span class='line'>                    <span class="k">if</span> <span class="p">(</span><span class="n">k</span> <span class="p">-</span> <span class="m">1</span> <span class="p">&gt;</span> <span class="m">0</span><span class="p">)</span> <span class="c1">//up neighbour</span>
+</span><span class='line'>                        <span class="n">map</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">n</span><span class="p">].</span><span class="n">neighbours</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">map</span><span class="p">[</span><span class="n">k</span> <span class="p">-</span> <span class="m">1</span><span class="p">,</span> <span class="n">n</span><span class="p">]);</span>
+</span><span class='line'>                    <span class="k">if</span> <span class="p">(</span><span class="n">n</span> <span class="p">+</span> <span class="m">1</span> <span class="p">&lt;</span> <span class="n">ConfigData</span><span class="p">.</span><span class="n">MAP_SIZE</span><span class="p">)</span>   <span class="c1">//right neighbour</span>
+</span><span class='line'>                        <span class="n">map</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">n</span><span class="p">].</span><span class="n">neighbours</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">map</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">n</span> <span class="p">+</span> <span class="m">1</span><span class="p">]);</span>
+</span><span class='line'>                    <span class="k">if</span> <span class="p">(</span><span class="n">k</span> <span class="p">+</span> <span class="m">1</span> <span class="p">&lt;</span> <span class="n">ConfigData</span><span class="p">.</span><span class="n">MAP_SIZE</span><span class="p">)</span>   <span class="c1">//down neighbour</span>
+</span><span class='line'>                        <span class="n">map</span><span class="p">[</span><span class="n">k</span><span class="p">,</span> <span class="n">n</span><span class="p">].</span><span class="n">neighbours</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">map</span><span class="p">[</span><span class="n">k</span> <span class="p">+</span> <span class="m">1</span><span class="p">,</span> <span class="n">n</span><span class="p">]);</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">public</span> <span class="n">Cell</span><span class="p">[,]</span> <span class="n">getMap</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">map</span><span class="p">;</span> <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c1">// GET A CELL BY ITS ID</span>
+</span><span class='line'>        <span class="k">public</span> <span class="n">Cell</span> <span class="nf">getCell</span><span class="p">(</span><span class="kt">int</span> <span class="n">cellid</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="kt">double</span> <span class="n">X</span> <span class="p">=</span> <span class="n">Convert</span><span class="p">.</span><span class="n">ToDouble</span><span class="p">(</span><span class="n">cellid</span> <span class="p">/</span> <span class="n">ConfigData</span><span class="p">.</span><span class="n">MAP_SIZE</span><span class="p">);</span>
+</span><span class='line'>            <span class="kt">double</span> <span class="n">Y</span> <span class="p">=</span> <span class="n">Convert</span><span class="p">.</span><span class="n">ToDouble</span><span class="p">(</span><span class="n">cellid</span> <span class="p">%</span> <span class="n">ConfigData</span><span class="p">.</span><span class="n">MAP_SIZE</span><span class="p">);</span>
+</span><span class='line'>            <span class="kt">int</span> <span class="n">x</span> <span class="p">=</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">Math</span><span class="p">.</span><span class="n">Floor</span><span class="p">(</span><span class="n">X</span><span class="p">);</span>
+</span><span class='line'>            <span class="kt">int</span> <span class="n">y</span> <span class="p">=</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">Math</span><span class="p">.</span><span class="n">Floor</span><span class="p">(</span><span class="n">Y</span><span class="p">);</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">map</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">];</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="c1">// GET A CELL BY ITS &lt;X,Y&gt; CO-ORDINATES</span>
+</span><span class='line'>        <span class="k">public</span> <span class="n">Cell</span> <span class="nf">getCell</span><span class="p">(</span><span class="kt">int</span> <span class="n">x</span><span class="p">,</span> <span class="kt">int</span> <span class="n">y</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">map</span><span class="p">[</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">];</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Then comes the interesting part. We used Breath First Search algorithm to find the nearest cell which contains a coin pile. In the constructor of the class &ldquo;BFS&rdquo; a world object is initialized. findNextMove() method returns the ID of the next cell where the tank client should move. This method requires the cell ID of the current tank&rsquo;s position. Then the Cell object corresponding to that position from the world  object is assigned to the &ldquo;start&rdquo; variable.</p>
+
+<p>The BFS algorithm works as follows. Until the queue which contains all the possible goal cells is empty, each cell in the queue is dequeued and scanned for it&rsquo;s neighboring cells. If those neighbors are obstacle cells(water,brick,stone) then those cells are marked as visited, but doesn&rsquo;t added to the queue. If a neighboring cell is not an obstacle and doesn&rsquo;t contain a coin pile either, then that cell is marked as visited, set its parent cell as the current cell and added to the queue. If a cell with a coin pile is found, then using the &ldquo;parent&rdquo; variable in each cell, a back tracking loop will return the ID of the next cell where the tank should move. If the queue is empty(i.e. no coin pile is found) then after while loop finishes, it will return -1, which is not a valid cell ID.</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+</pre></td><td class='code'><pre><code class='c#'><span class='line'><span class="k">class</span> <span class="nc">BFS</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="k">private</span> <span class="n">World</span> <span class="n">world</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">private</span> <span class="kt">int</span> <span class="n">currentPos</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">private</span> <span class="kt">int</span> <span class="n">mapSize</span> <span class="p">=</span> <span class="n">ConfigData</span><span class="p">.</span><span class="n">MAP_SIZE</span> <span class="p">*</span> <span class="n">ConfigData</span><span class="p">.</span><span class="n">MAP_SIZE</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">private</span> <span class="n">Cell</span> <span class="n">start</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">private</span> <span class="kt">int</span> <span class="n">id</span> <span class="p">=-</span><span class="m">1</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">public</span> <span class="nf">BFS</span><span class="p">(</span><span class="n">World</span> <span class="n">w</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">this</span><span class="p">.</span><span class="n">world</span> <span class="p">=</span> <span class="n">w</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">public</span> <span class="kt">int</span> <span class="nf">findNextMove</span><span class="p">(</span><span class="kt">int</span> <span class="n">currP</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="k">this</span><span class="p">.</span><span class="n">currentPos</span> <span class="p">=</span> <span class="n">currP</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">this</span><span class="p">.</span><span class="n">start</span> <span class="p">=</span> <span class="n">world</span><span class="p">.</span><span class="n">getCell</span><span class="p">(</span><span class="n">currentPos</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">//if the tank is on a coin pile then that coin pile will vanish</span>
+</span><span class='line'>            <span class="n">start</span><span class="p">.</span><span class="n">is_coin</span> <span class="p">=</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="n">Queue</span><span class="p">&lt;</span><span class="n">Cell</span><span class="p">&gt;</span> <span class="n">queue</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Queue</span><span class="p">&lt;</span><span class="n">Cell</span><span class="p">&gt;();</span>
+</span><span class='line'>            <span class="kt">bool</span><span class="p">[]</span> <span class="n">mark</span> <span class="p">=</span> <span class="k">new</span> <span class="kt">bool</span><span class="p">[</span><span class="n">mapSize</span><span class="p">];</span>        <span class="c1">// boolean array to store if a cell is visited</span>
+</span><span class='line'>            <span class="c1">//enque the current position cell</span>
+</span><span class='line'>            <span class="n">queue</span><span class="p">.</span><span class="n">Enqueue</span><span class="p">(</span><span class="n">start</span><span class="p">);</span>
+</span><span class='line'>            <span class="c1">// marks current position as visited</span>
+</span><span class='line'>            <span class="n">mark</span><span class="p">[</span><span class="n">start</span><span class="p">.</span><span class="n">id</span><span class="p">]</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="kt">bool</span> <span class="n">found</span> <span class="p">=</span> <span class="k">false</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c1">//untill a path is found</span>
+</span><span class='line'>            <span class="k">while</span> <span class="p">(</span><span class="n">queue</span><span class="p">.</span><span class="n">Count</span> <span class="p">!=</span> <span class="m">0</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="n">Cell</span> <span class="n">current</span> <span class="p">=</span> <span class="n">queue</span><span class="p">.</span><span class="n">Dequeue</span><span class="p">();</span>
+</span><span class='line'>                <span class="c1">//scans all the neighbour cells of the current cell</span>
+</span><span class='line'>                <span class="k">foreach</span> <span class="p">(</span><span class="n">Cell</span> <span class="n">neighbour</span> <span class="k">in</span> <span class="n">current</span><span class="p">.</span><span class="n">neighbours</span><span class="p">)</span>
+</span><span class='line'>                <span class="p">{</span>
+</span><span class='line'>                    <span class="c1">// if a coin pile or life pack is found BFS algorithm will break and return that cell id</span>
+</span><span class='line'>                    <span class="k">if</span> <span class="p">(</span><span class="n">neighbour</span><span class="p">.</span><span class="n">is_coin</span><span class="p">||</span> <span class="n">neighbour</span><span class="p">.</span><span class="n">is_Life</span><span class="p">)</span>
+</span><span class='line'>                    <span class="p">{</span>
+</span><span class='line'>                        <span class="n">found</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>                        <span class="n">Cell</span> <span class="n">curr</span> <span class="p">=</span> <span class="n">neighbour</span><span class="p">;</span>
+</span><span class='line'>                        <span class="c1">//backtracks the cell id of next cell where the tank should move</span>
+</span><span class='line'>                        <span class="k">while</span> <span class="p">(</span><span class="n">curr</span><span class="p">.</span><span class="n">parent</span> <span class="p">!=</span> <span class="n">start</span><span class="p">)</span>
+</span><span class='line'>                        <span class="p">{</span>
+</span><span class='line'>                            <span class="n">curr</span> <span class="p">=</span> <span class="n">curr</span><span class="p">.</span><span class="n">parent</span><span class="p">;</span>
+</span><span class='line'>                        <span class="p">}</span>
+</span><span class='line'>                        <span class="n">id</span> <span class="p">=</span> <span class="n">curr</span><span class="p">.</span><span class="n">id</span><span class="p">;</span>
+</span><span class='line'>                        <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>                    <span class="p">}</span>
+</span><span class='line'>                    <span class="k">if</span> <span class="p">(</span><span class="n">neighbour</span><span class="p">.</span><span class="n">is_brick</span> <span class="p">||</span> <span class="n">neighbour</span><span class="p">.</span><span class="n">is_stone</span> <span class="p">||</span> <span class="n">neighbour</span><span class="p">.</span><span class="n">is_water</span><span class="p">)</span>
+</span><span class='line'>                    <span class="p">{</span>
+</span><span class='line'>                        <span class="n">mark</span><span class="p">[</span><span class="n">neighbour</span><span class="p">.</span><span class="n">id</span><span class="p">]</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+</span><span class='line'>                    <span class="p">}</span>
+</span><span class='line'>                    <span class="c1">//if neighbour is not a blocked cell it will be added to the queue</span>
+</span><span class='line'>                    <span class="k">if</span> <span class="p">(!</span><span class="n">mark</span><span class="p">[</span><span class="n">neighbour</span><span class="p">.</span><span class="n">id</span><span class="p">])</span>
+</span><span class='line'>                    <span class="p">{</span>
+</span><span class='line'>                        <span class="n">mark</span><span class="p">[</span><span class="n">neighbour</span><span class="p">.</span><span class="n">id</span><span class="p">]</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+</span><span class='line'>                        <span class="n">neighbour</span><span class="p">.</span><span class="n">parent</span> <span class="p">=</span> <span class="n">current</span><span class="p">;</span>
+</span><span class='line'>                        <span class="n">queue</span><span class="p">.</span><span class="n">Enqueue</span><span class="p">(</span><span class="n">neighbour</span><span class="p">);</span>
+</span><span class='line'>                    <span class="p">}</span>
+</span><span class='line'>                <span class="p">}</span>
+</span><span class='line'>                <span class="c1">// if a goal is found &quot;while&quot; loop will break </span>
+</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="n">found</span><span class="p">)</span>
+</span><span class='line'>                    <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">id</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This algorithm is best suited when the search space(size of the &ldquo;World&rdquo; 2D array) is small (typically less than 2500 cells). BFS is guaranteed to  find the closest goal (if a goal exists). If there is no goal, BFS will go through the entire search space, thus the size of the queue will increase by 3 cells on each iteration (assuming there are no obstacles). This pitfall can be avoided by using AStar algorithm. But for a small search space BFS is more than enough. The full project can be downloaded from the <a href="https://bitbucket.org/elitecoders/tankgame">Bitbucket repository</a>.</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Sexy, Slim Wingpanel]]></title>
+    <link href="http://sajithdilshan.github.io/blog/blog/2013/06/23/sexy/"/>
+    <updated>2013-06-23T16:33:00+05:30</updated>
+    <id>http://sajithdilshan.github.io/blog/blog/2013/06/23/sexy</id>
+    <content type="html"><![CDATA[<p>If you are already using Elementary OS Luna then you don&rsquo;t need any introduction about wingpanel. But if you are not using eOS, then it is a top panel, similar to one you had in gnome 2 which displayed indicators and date/time.</p>
+
+<p>But in this new slim wingplanel version, developed by <a href="https://plus.google.com/107828869706749088966">Heath Paddock</a> the panel&rsquo;s width is reduced only to display the indicator icons and hovers over windows, hence maximizing the available vertical pixels for content as you can see in the below image.</p>
+
+<p><img src="https://dl.dropboxusercontent.com/u/30358512/blog/sc1.png" title="Slim wingpanel with maximized window" alt="Slim wingpanel with maximized window"></p>
+
+<p>You can insatll this slim wingpanel in eOS luna by using following commands</p>
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo add-apt-repository ppa:sajithdilshan/wingpanelslim-daily
+</span><span class='line'>sudo apt-get update</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>echo "Package: *
+</span><span class='line'>Pin: release o=LP-PPA-sajithdilshan-wingpanelslim-daily
+</span><span class='line'>Pin-Priority: 1200" | sudo tee /etc/apt/preferences.d/sajithdilshan-wingpanelslim-daily.pref</span></code></pre></td></tr></table></div></figure>
+
+
+
+
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>sudo apt-get update
+</span><span class='line'>sudo apt-get install wingpanel</span></code></pre></td></tr></table></div></figure>
+
+
+<p>The only downside of this is that there is no icon/link to launch slingshot. But you can either use super+spacebar keyboard shortcut to launch slingshot or install synapse search search indicator. Use instructions on <a href="http://www.webupd8.org/2013/06/synapse-indicator-new-search.html">this site</a> to install synapse search indicator and you can launch it using super+alt+spacebar key combinations.</p>
+
+<p>Below is a screenshot of synapse search indicator in action.</p>
+
+<p><img src="https://dl.dropboxusercontent.com/u/30358512/blog/sc2.png" title="'Synapse search indicator'" ></p>
+]]></content>
+  </entry>
+  
+</feed>

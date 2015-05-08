@@ -1,0 +1,15 @@
+<div class="highlight"><pre><span class="nt">%div</span><span class="nc">.panel-group</span><span class="p">{</span><span class="s2">&quot;id&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;accordion&quot;</span><span class="p">}</span>
+  <span class="p">-</span> <span class="k">if</span> <span class="vi">@feeditem_list</span><span class="o">.</span><span class="n">nil?</span>
+    <span class="nt">%p</span> no item here
+  <span class="p">-</span> <span class="k">else</span>
+    <span class="p">-</span> <span class="vi">@feeditem_list</span><span class="o">.</span><span class="n">each_with_index</span> <span class="k">do</span> <span class="o">|</span><span class="n">feeditem</span><span class="p">,</span> <span class="n">index</span><span class="o">|</span>
+      <span class="p">-</span> <span class="vg">$item_id</span> <span class="o">=</span> <span class="n">feeditem</span><span class="o">.</span><span class="n">id</span>
+      <span class="nt">%div</span><span class="nc">.panel</span><span class="p">{</span><span class="s2">&quot;id&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;panel</span><span class="si">#{</span><span class="vg">$item_id</span><span class="si">}</span>&quot;}
+        <span class="nt">%div</span><span class="nc">.panel-heading</span>
+          <span class="nt">%h4</span><span class="nc">.panel-title</span>
+            <span class="nt">%a</span><span class="nc">.accordion-toggle</span><span class="p">{</span><span class="s2">&quot;data-toggle&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;collapse&quot;</span><span class="p">,</span> <span class="s2">&quot;data-parent&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;#accordion&quot;</span><span class="p">,</span> <span class="s2">&quot;href&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;#feed</span><span class="si">#{</span><span class="vg">$item_id</span><span class="si">}</span>&quot;}
+              <span class="p">=</span> <span class="n">feeditem</span><span class="o">.</span><span class="n">post_title</span>
+        <span class="nt">%div</span><span class="nc">.panel-collapse.collapse</span><span class="p">{</span><span class="s2">&quot;id&quot;</span> <span class="o">=&gt;</span> <span class="s2">&quot;feed</span><span class="si">#{</span><span class="vg">$item_id</span><span class="si">}</span>&quot;}
+          <span class="nt">%div</span><span class="nc">.panel-body</span>
+              <span class="nt">%p</span><span class="p">=</span> <span class="n">feeditem</span><span class="o">.</span><span class="n">post_body</span><span class="o">.</span><span class="n">html_safe</span>
+</pre></div>

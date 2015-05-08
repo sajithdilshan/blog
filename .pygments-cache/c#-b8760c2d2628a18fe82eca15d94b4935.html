@@ -1,0 +1,74 @@
+<div class="highlight"><pre><span class="k">class</span> <span class="nc">BFS</span><span class="p">&lt;/</span><span class="n">p</span><span class="p">&gt;</span>
+
+<span class="p">&lt;</span><span class="n">pre</span><span class="p">&gt;&lt;</span><span class="n">code</span><span class="p">&gt;{</span>
+    <span class="k">private</span> <span class="n">World</span> <span class="n">world</span><span class="p">;</span>
+    <span class="k">private</span> <span class="kt">int</span> <span class="n">currentPos</span><span class="p">;</span>
+    <span class="k">private</span> <span class="kt">int</span> <span class="n">mapSize</span> <span class="p">=</span> <span class="n">ConfigData</span><span class="p">.</span><span class="n">MAP_SIZE</span> <span class="p">*</span> <span class="n">ConfigData</span><span class="p">.</span><span class="n">MAP_SIZE</span><span class="p">;</span>
+    <span class="k">private</span> <span class="n">Cell</span> <span class="n">start</span><span class="p">;</span>
+    <span class="k">private</span> <span class="kt">int</span> <span class="n">id</span> <span class="p">=-</span><span class="m">1</span><span class="p">;</span>
+
+    <span class="k">public</span> <span class="nf">BFS</span><span class="p">(</span><span class="n">World</span> <span class="n">w</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">world</span> <span class="p">=</span> <span class="n">w</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="k">public</span> <span class="kt">int</span> <span class="nf">findNextMove</span><span class="p">(</span><span class="kt">int</span> <span class="n">currP</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">currentPos</span> <span class="p">=</span> <span class="n">currP</span><span class="p">;</span>
+        <span class="k">this</span><span class="p">.</span><span class="n">start</span> <span class="p">=</span> <span class="n">world</span><span class="p">.</span><span class="n">getCell</span><span class="p">(</span><span class="n">currentPos</span><span class="p">);</span>
+
+        <span class="c1">//if the tank is on a coin pile then that coin pile will vanish</span>
+        <span class="n">start</span><span class="p">.</span><span class="n">is_coin</span> <span class="p">=</span> <span class="k">false</span><span class="p">;</span>
+
+        <span class="n">Queue</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">Cell</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;</span> <span class="n">queue</span> <span class="p">=</span> <span class="k">new</span> <span class="n">Queue</span><span class="p">&amp;</span><span class="n">lt</span><span class="p">;</span><span class="n">Cell</span><span class="p">&amp;</span><span class="n">gt</span><span class="p">;();</span>
+        <span class="kt">bool</span><span class="p">[]</span> <span class="n">mark</span> <span class="p">=</span> <span class="k">new</span> <span class="kt">bool</span><span class="p">[</span><span class="n">mapSize</span><span class="p">];</span>        <span class="c1">// boolean array to store if a cell is visited</span>
+        <span class="c1">//enque the current position cell</span>
+        <span class="n">queue</span><span class="p">.</span><span class="n">Enqueue</span><span class="p">(</span><span class="n">start</span><span class="p">);</span>
+        <span class="c1">// marks current position as visited</span>
+        <span class="n">mark</span><span class="p">[</span><span class="n">start</span><span class="p">.</span><span class="n">id</span><span class="p">]</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+
+        <span class="kt">bool</span> <span class="n">found</span> <span class="p">=</span> <span class="k">false</span><span class="p">;</span>
+
+        <span class="c1">//untill a path is found</span>
+        <span class="k">while</span> <span class="p">(</span><span class="n">queue</span><span class="p">.</span><span class="n">Count</span> <span class="p">!=</span> <span class="m">0</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">Cell</span> <span class="n">current</span> <span class="p">=</span> <span class="n">queue</span><span class="p">.</span><span class="n">Dequeue</span><span class="p">();</span>
+            <span class="c1">//scans all the neighbour cells of the current cell</span>
+            <span class="k">foreach</span> <span class="p">(</span><span class="n">Cell</span> <span class="n">neighbour</span> <span class="k">in</span> <span class="n">current</span><span class="p">.</span><span class="n">neighbours</span><span class="p">)</span>
+            <span class="p">{</span>
+                <span class="c1">// if a coin pile or life pack is found BFS algorithm will break and return that cell id</span>
+                <span class="k">if</span> <span class="p">(</span><span class="n">neighbour</span><span class="p">.</span><span class="n">is_coin</span><span class="p">||</span> <span class="n">neighbour</span><span class="p">.</span><span class="n">is_Life</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="n">found</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+
+                    <span class="n">Cell</span> <span class="n">curr</span> <span class="p">=</span> <span class="n">neighbour</span><span class="p">;</span>
+                    <span class="c1">//backtracks the cell id of next cell where the tank should move</span>
+                    <span class="k">while</span> <span class="p">(</span><span class="n">curr</span><span class="p">.</span><span class="n">parent</span> <span class="p">!=</span> <span class="n">start</span><span class="p">)</span>
+                    <span class="p">{</span>
+                        <span class="n">curr</span> <span class="p">=</span> <span class="n">curr</span><span class="p">.</span><span class="n">parent</span><span class="p">;</span>
+                    <span class="p">}</span>
+                    <span class="n">id</span> <span class="p">=</span> <span class="n">curr</span><span class="p">.</span><span class="n">id</span><span class="p">;</span>
+                    <span class="k">break</span><span class="p">;</span>
+                <span class="p">}</span> 
+                <span class="k">if</span> <span class="p">(</span><span class="n">neighbour</span><span class="p">.</span><span class="n">is_brick</span> <span class="p">||</span> <span class="n">neighbour</span><span class="p">.</span><span class="n">is_stone</span> <span class="p">||</span> <span class="n">neighbour</span><span class="p">.</span><span class="n">is_water</span><span class="p">)</span>
+                <span class="p">{</span>
+                    <span class="n">mark</span><span class="p">[</span><span class="n">neighbour</span><span class="p">.</span><span class="n">id</span><span class="p">]</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+                <span class="p">}</span>
+                <span class="c1">//if neighbour is not a blocked cell it will be added to the queue</span>
+                <span class="k">if</span> <span class="p">(!</span><span class="n">mark</span><span class="p">[</span><span class="n">neighbour</span><span class="p">.</span><span class="n">id</span><span class="p">])</span>
+                <span class="p">{</span>
+                    <span class="n">mark</span><span class="p">[</span><span class="n">neighbour</span><span class="p">.</span><span class="n">id</span><span class="p">]</span> <span class="p">=</span> <span class="k">true</span><span class="p">;</span>
+                    <span class="n">neighbour</span><span class="p">.</span><span class="n">parent</span> <span class="p">=</span> <span class="n">current</span><span class="p">;</span>
+                    <span class="n">queue</span><span class="p">.</span><span class="n">Enqueue</span><span class="p">(</span><span class="n">neighbour</span><span class="p">);</span>
+                <span class="p">}</span>                   
+            <span class="p">}</span>
+            <span class="c1">// if a goal is found &quot;while&quot; loop will break </span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">found</span><span class="p">)</span>
+                <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">id</span>  
+<span class="p">}</span>
+<span class="p">&lt;/</span><span class="n">code</span><span class="p">&gt;&lt;/</span><span class="n">pre</span><span class="p">&gt;</span>
+
+<span class="p">&lt;</span><span class="n">p</span><span class="p">&gt;</span> 
+</pre></div>
