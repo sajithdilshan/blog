@@ -4,7 +4,7 @@
   <title><![CDATA[_here be dragons_]]></title>
   <link href="http://sajithdilshan.github.io/blog/atom.xml" rel="self"/>
   <link href="http://sajithdilshan.github.io/blog/"/>
-  <updated>2014-07-12T15:08:32+05:30</updated>
+  <updated>2015-05-08T10:22:03+05:30</updated>
   <id>http://sajithdilshan.github.io/blog/</id>
   <author>
     <name><![CDATA[Sajith Dilshan]]></name>
@@ -12,6 +12,15 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Installing CentOS on VirtualBox]]></title>
+    <link href="http://sajithdilshan.github.io/blog/blog/2015/05/08/installing-centos-on-virtualbox/"/>
+    <updated>2015-05-08T10:15:29+05:30</updated>
+    <id>http://sajithdilshan.github.io/blog/blog/2015/05/08/installing-centos-on-virtualbox</id>
+    <content type="html"><![CDATA[<p>dsfsdfsdfsdf</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Transform Freya Into Yosemite]]></title>
