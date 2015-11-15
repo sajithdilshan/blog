@@ -40,7 +40,7 @@ Next under, the network section in the properties of your virtual machine, selec
 
 {% img https://dl.dropboxusercontent.com/u/30358512/blog/network-5.png %}
 
-Assume the HTTP server in the virual machine runs on the port 9800 and you want to expose it via port 8082 in your host machine. Then add a new port forwarding rule as shown below. You can leave the Host IP as empty and the Guest IP should be the IP of the virtual machine. Now if you go to 'http://localhost:8082' in your host OS, you will be forwarded to the HTTP server in your virtual machine.
+Assume the HTTP server in the virual machine runs on the port 9800 and you want to expose it via port 8082 in your host machine. Then add a new port forwarding rule as shown below. You can leave the Host IP and Guest IP to be empty and VirtualBox will correctly resolve those. Just specify the ports correctly. Now if you go to 'http://localhost:8082' in your host OS, you will be forwarded to the HTTP server in your virtual machine.
 
 {% img https://dl.dropboxusercontent.com/u/30358512/blog/network-6.png %}
 

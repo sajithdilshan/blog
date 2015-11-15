@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Virtualbox | _here be dragons_]]></title>
   <link href="http://sajithdilshan.github.io/blog/blog/categories/virtualbox/atom.xml" rel="self"/>
   <link href="http://sajithdilshan.github.io/blog/"/>
-  <updated>2015-11-15T21:03:36+05:30</updated>
+  <updated>2015-11-15T21:26:51+05:30</updated>
   <id>http://sajithdilshan.github.io/blog/</id>
   <author>
     <name><![CDATA[Sajith Dilshan]]></name>
@@ -57,7 +57,7 @@
 
 <p><img class="<a" src="href="https://dl.dropboxusercontent.com/u/30358512/blog/network-5.png">https://dl.dropboxusercontent.com/u/30358512/blog/network-5.png</a>"></p>
 
-<p>Assume the HTTP server in the virual machine runs on the port 9800 and you want to expose it via port 8082 in your host machine. Then add a new port forwarding rule as shown below. You can leave the Host IP as empty and the Guest IP should be the IP of the virtual machine. Now if you go to &lsquo;<a href="http://localhost:8082">http://localhost:8082</a>&rsquo; in your host OS, you will be forwarded to the HTTP server in your virtual machine.</p>
+<p>Assume the HTTP server in the virual machine runs on the port 9800 and you want to expose it via port 8082 in your host machine. Then add a new port forwarding rule as shown below. You can leave the Host IP and Guest IP to be empty and VirtualBox will correctly resolve those. Just specify the ports correctly. Now if you go to &lsquo;<a href="http://localhost:8082">http://localhost:8082</a>&rsquo; in your host OS, you will be forwarded to the HTTP server in your virtual machine.</p>
 
 <p><img class="<a" src="href="https://dl.dropboxusercontent.com/u/30358512/blog/network-6.png">https://dl.dropboxusercontent.com/u/30358512/blog/network-6.png</a>"></p>
 
